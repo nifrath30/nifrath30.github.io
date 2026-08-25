@@ -1,576 +1,567 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    min-height: 100vh;
-    overflow-x: hidden;
-
-    background:
-        radial-gradient(
-            circle at center,
-            #180b22 0%,
-            #090711 42%,
-            #030307 75%,
-            #000000 100%
-        );
-
-    color: white;
-}
-
-
-/* ================================
-   DARK ATMOSPHERE
-================================ */
-
-.background {
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.background::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-
-    background:
-        radial-gradient(
-            circle at 20% 30%,
-            rgba(102, 0, 153, 0.12),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 80% 70%,
-            rgba(20, 50, 120, 0.10),
-            transparent 30%
-        );
-
-    animation: atmosphere 8s ease-in-out infinite alternate;
-}
-
-
-/* ================================
-   FOG
-================================ */
-
-.fog {
-    position: absolute;
-
-    width: 600px;
-    height: 180px;
-
-    background: rgba(100, 20, 130, 0.08);
-
-    filter: blur(70px);
-
-    border-radius: 50%;
-}
-
-.fog-one {
-    left: -200px;
-    bottom: 10%;
-
-    animation: fogMove 12s ease-in-out infinite alternate;
-}
-
-.fog-two {
-    right: -200px;
-    top: 10%;
-
-    background: rgba(30, 50, 120, 0.08);
-
-    animation: fogMoveReverse 15s ease-in-out infinite alternate;
-}
-
-
-/* ================================
-   MAIN INTRO / HEADER
-================================ */
-
-.welcome {
-    position: absolute;
-
-    top: 50%;
-    left: 50%;
-
-    width: 100%;
-
-    transform:
-        translate(-50%, -50%)
-        scale(1);
-
-    text-align: center;
-
-    padding: 30px;
-
-    z-index: 2;
-
-    animation:
-        introToHeader
-        6s
-        cubic-bezier(.16, 1, .3, 1)
-        forwards;
-}
-
-
-/* ================================
-   ENERGY SLASH
-================================ */
-
-.slash {
-    position: absolute;
-
-    width: 120%;
-    height: 2px;
-
-    left: -10%;
-    top: 50%;
-
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(150, 60, 220, 0.05),
-        rgba(190, 100, 255, 0.6),
-        rgba(255, 255, 255, 0.8),
-        rgba(190, 100, 255, 0.6),
-        rgba(150, 60, 220, 0.05),
-        transparent
-    );
-
-    transform: rotate(-8deg) scaleX(0);
-
-    opacity: 0;
-
-    animation:
-        slashReveal
-        2s
-        ease-out
-        0.8s
-        forwards;
-
-    pointer-events: none;
-}
-
-
-/* ================================
-   DECORATIVE LINES
-================================ */
-
-.line {
-    width: min(500px, 65vw);
-    height: 1px;
-
-    margin: 18px auto;
-
-    background: linear-gradient(
-        90deg,
-        transparent,
-        #6d28d9,
-        #c084fc,
-        #6d28d9,
-        transparent
-    );
-
-    opacity: 0;
-
-    animation:
-        lineReveal
-        1.5s
-        ease-out
-        1.2s
-        forwards;
-}
-
-
-/* ================================
-   MAIN TITLE
-================================ */
-
-h1 {
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
-    gap: clamp(6px, 1.2vw, 18px);
-
-    white-space: nowrap;
-
-    font-family: "Cinzel", serif;
-
-    font-weight: 900;
-
-    font-size: clamp(1rem, 3vw, 3.5rem);
-
-    letter-spacing: clamp(1px, 0.25vw, 5px);
-
-    color: #e9e3ef;
-
-    opacity: 0;
-
-    animation:
-        titleReveal
-        1.8s
-        cubic-bezier(.16, 1, .3, 1)
-        0.4s
-        forwards,
-
-        darkPulse
-        4s
-        ease-in-out
-        2.2s
-        infinite;
-}
-
-
-/* ================================
-   WORDS
-================================ */
-
-h1 span {
-    display: inline-block;
-
-    opacity: 0;
-
-    transform: translateY(30px);
-
-    animation:
-        wordReveal
-        1s
-        cubic-bezier(.16, 1, .3, 1)
-        forwards;
-
-    text-shadow:
-        0 2px 3px #000,
-        0 0 8px rgba(130, 50, 190, 0.5),
-        0 0 25px rgba(100, 30, 160, 0.25);
-}
-
-h1 span:nth-child(1) {
-    animation-delay: 0.6s;
-}
-
-h1 span:nth-child(2) {
-    animation-delay: 0.9s;
-}
-
-h1 span:nth-child(3) {
-    animation-delay: 1.2s;
-}
-
-
-/* ================================
-   FINAL WORD
-================================ */
-
-h1 span:last-child {
-    color: #c4a1ff;
-
-    text-shadow:
-        0 2px 3px #000,
-        0 0 10px rgba(168, 85, 247, 0.7),
-        0 0 30px rgba(109, 40, 217, 0.45);
-}
-
-
-/* ================================
-   SUBTITLE
-================================ */
-
-.subtitle {
-    margin-top: 22px;
-
-    font-family: "Orbitron", sans-serif;
-
-    font-size: clamp(0.5rem, 0.8vw, 0.85rem);
-
-    letter-spacing: clamp(3px, 0.6vw, 8px);
-
-    color: #82788d;
-
-    opacity: 0;
-
-    animation:
-        subtitleReveal
-        1.5s
-        ease-out
-        1.8s
-        forwards;
-}
-
-
-/* ================================
-   INTRO → TOP HEADER
-================================ */
-
-@keyframes introToHeader {
-
-    /*
-       START
-       Large and centered
-    */
-    0% {
-        top: 50%;
-        left: 50%;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1.08);
-    }
-
-
-    /*
-       INTRO FINISHES
-    */
-    55% {
-        top: 50%;
-        left: 50%;
-
-        transform:
-            translate(-50%, -50%)
-            scale(1);
-    }
-
-
-    /*
-       MOVE TO TOP + SHRINK
-    */
-    100% {
-        top: 45px;
-        left: 50%;
-
-        transform:
-            translate(-50%, 0)
-            scale(0.42);
-    }
-}
-
-
-/* ================================
-   TITLE REVEAL
-================================ */
-
-@keyframes titleReveal {
-
-    from {
-        opacity: 0;
-
-        letter-spacing: 10px;
-
-        filter: blur(6px);
-    }
-
-    to {
-        opacity: 1;
-
-        letter-spacing:
-            clamp(1px, 0.25vw, 5px);
-
-        filter: blur(0);
-    }
-}
-
-
-/* ================================
-   WORD REVEAL
-================================ */
-
-@keyframes wordReveal {
-
-    from {
-        opacity: 0;
-
-        transform: translateY(35px);
-
-        filter: blur(8px);
-    }
-
-    to {
-        opacity: 1;
-
-        transform: translateY(0);
-
-        filter: blur(0);
-    }
-}
-
-
-/* ================================
-   SUBTITLE REVEAL
-================================ */
-
-@keyframes subtitleReveal {
-
-    from {
-        opacity: 0;
-
-        letter-spacing: 15px;
-    }
-
-    to {
-        opacity: 1;
-
-        letter-spacing:
-            clamp(3px, 0.6vw, 8px);
-    }
-}
-
-
-/* ================================
-   LINE REVEAL
-================================ */
-
-@keyframes lineReveal {
-
-    from {
-        transform: scaleX(0);
-
-        opacity: 0;
-    }
-
-    to {
-        transform: scaleX(1);
-
-        opacity: 1;
-    }
-}
-
-
-/* ================================
-   SLASH REVEAL
-================================ */
-
-@keyframes slashReveal {
-
-    from {
-        opacity: 0;
-
-        transform:
-            rotate(-8deg)
-            scaleX(0);
-    }
-
-    to {
-        opacity: 1;
-
-        transform:
-            rotate(-8deg)
-            scaleX(1);
-    }
-}
-
-
-/* ================================
-   DARK PULSE
-================================ */
-
-@keyframes darkPulse {
-
-    0%, 100% {
-        filter: brightness(0.9);
-    }
-
-    50% {
-        filter: brightness(1.15);
-    }
-}
-
-
-/* ================================
-   ATMOSPHERE
-================================ */
-
-@keyframes atmosphere {
-
-    from {
-        transform: scale(1);
-        opacity: 0.7;
-    }
-
-    to {
-        transform: scale(1.12);
-        opacity: 1;
-    }
-}
-
-
-/* ================================
-   FOG MOVEMENT
-================================ */
-
-@keyframes fogMove {
-
-    from {
-        transform: translateX(0);
-    }
-
-    to {
-        transform: translateX(250px);
-    }
-}
-
-@keyframes fogMoveReverse {
-
-    from {
-        transform: translateX(0);
-    }
-
-    to {
-        transform: translateX(-250px);
-    }
-}
-
-
-/* ================================
-   MOBILE
-================================ */
-
-@media (max-width: 900px) {
-
-    h1 {
-        gap: 5px;
-
-        font-size: 2.5vw;
-
-        letter-spacing: 1px;
-    }
-
-    .subtitle {
-        font-size: 0.55rem;
-    }
-
-    @keyframes introToHeader {
-
-        0% {
-            top: 50%;
-            left: 50%;
-
-            transform:
-                translate(-50%, -50%)
-                scale(1.08);
-        }
-
-        55% {
-            top: 50%;
-            left: 50%;
-
-            transform:
-                translate(-50%, -50%)
-                scale(1);
-        }
-
-        100% {
-            top: 35px;
-            left: 50%;
-
-            transform:
-                translate(-50%, 0)
-                scale(0.38);
-        }
-    }
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+} 
+ 
+body { 
+    min-height: 100vh; 
+    overflow-x: hidden; 
+ 
+    background: 
+        radial-gradient( 
+            circle at center, 
+            #180b22 0%, 
+            #090711 42%, 
+            #030307 75%, 
+            #000000 100% 
+        ); 
+ 
+    color: white; 
+} 
+ 
+ 
+/* ================================ 
+   DARK ATMOSPHERE 
+================================ */ 
+ 
+.background { 
+    position: fixed; 
+    inset: 0; 
+    overflow: hidden; 
+    pointer-events: none; 
+    z-index: 0; 
+} 
+ 
+.background::before { 
+    content: ""; 
+    position: absolute; 
+    inset: 0; 
+ 
+    background: 
+        radial-gradient( 
+            circle at 20% 30%, 
+            rgba(102, 0, 153, 0.12), 
+            transparent 30% 
+        ), 
+        radial-gradient( 
+            circle at 80% 70%, 
+            rgba(20, 50, 120, 0.10), 
+            transparent 30% 
+        ); 
+ 
+    animation: atmosphere 8s ease-in-out infinite alternate; 
+} 
+ 
+ 
+/* ================================ 
+   FOG 
+================================ */ 
+ 
+.fog { 
+    position: absolute; 
+ 
+    width: 600px; 
+    height: 180px; 
+ 
+    background: rgba(100, 20, 130, 0.08); 
+ 
+    filter: blur(70px); 
+ 
+    border-radius: 50%; 
+} 
+ 
+.fog-one { 
+    left: -200px; 
+    bottom: 10%; 
+ 
+    animation: fogMove 12s ease-in-out infinite alternate; 
+} 
+ 
+.fog-two { 
+    right: -200px; 
+    top: 10%; 
+ 
+    background: rgba(30, 50, 120, 0.08); 
+ 
+    animation: fogMoveReverse 15s ease-in-out infinite alternate; 
+} 
+ 
+ 
+/* ================================ 
+   MAIN INTRO / HEADER 
+================================ */ 
+ 
+.welcome { 
+    position: absolute; 
+ 
+    top: 50%; 
+    left: 50%; 
+ 
+    width: 100%; 
+ 
+    transform: 
+        translate(-50%, -50%) 
+        scale(1); 
+ 
+    text-align: center; 
+ 
+    padding: 30px; 
+ 
+    z-index: 2; 
+ 
+    animation: 
+        introToHeader 
+        6s 
+        cubic-bezier(.16, 1, .3, 1) 
+        forwards; 
+} 
+ 
+ 
+/* ================================ 
+   ENERGY SLASH 
+================================ */ 
+ 
+.slash { 
+    position: absolute; 
+ 
+    width: 120%; 
+    height: 2px; 
+ 
+    left: -10%; 
+    top: 50%; 
+ 
+    background: linear-gradient( 
+        90deg, 
+        transparent, 
+        rgba(150, 60, 220, 0.05), 
+        rgba(190, 100, 255, 0.6), 
+        rgba(255, 255, 255, 0.8), 
+        rgba(190, 100, 255, 0.6), 
+        rgba(150, 60, 220, 0.05), 
+        transparent 
+    ); 
+ 
+    transform: rotate(-8deg) scaleX(0); 
+ 
+    opacity: 0; 
+ 
+    animation: 
+        slashReveal 
+        2s 
+        ease-out 
+        0.8s 
+        forwards; 
+ 
+    pointer-events: none; 
+} 
+ 
+ 
+/* ================================ 
+   DECORATIVE LINES 
+================================ */ 
+ 
+.line { 
+    width: min(500px, 65vw); 
+    height: 1px; 
+ 
+    margin: 18px auto; 
+ 
+    background: linear-gradient( 
+        90deg, 
+        transparent, 
+        #6d28d9, 
+        #c084fc, 
+        #6d28d9, 
+        transparent 
+    ); 
+ 
+    opacity: 0; 
+ 
+    animation: 
+        lineReveal 
+        1.5s 
+        ease-out 
+        1.2s 
+        forwards; 
+} 
+ 
+ 
+/* ================================ 
+   MAIN TITLE 
+================================ */ 
+ 
+h1 { 
+    display: flex; 
+ 
+    justify-content: center; 
+    align-items: center; 
+ 
+    gap: clamp(6px, 1.2vw, 18px); 
+ 
+    white-space: nowrap; 
+ 
+    font-family: "Cinzel", serif; 
+ 
+    font-weight: 900; 
+ 
+    font-size: clamp(1rem, 3vw, 3.5rem); 
+ 
+    letter-spacing: clamp(1px, 0.25vw, 5px); 
+ 
+    color: #e9e3ef; 
+ 
+    opacity: 0; 
+ 
+    animation: 
+        titleReveal 
+        1.8s 
+        cubic-bezier(.16, 1, .3, 1) 
+        0.4s 
+        forwards, 
+ 
+        darkPulse 
+        4s 
+        ease-in-out 
+        2.2s 
+        infinite; 
+} 
+ 
+ 
+/* ================================ 
+   WORDS 
+================================ */ 
+ 
+h1 span { 
+    display: inline-block; 
+ 
+    opacity: 0; 
+ 
+    transform: translateY(30px); 
+ 
+    animation: 
+        wordReveal 
+        1s 
+        cubic-bezier(.16, 1, .3, 1) 
+        forwards; 
+ 
+    text-shadow: 
+        0 2px 3px #000, 
+        0 0 8px rgba(130, 50, 190, 0.5), 
+        0 0 25px rgba(100, 30, 160, 0.25); 
+} 
+ 
+h1 span:nth-child(1) { 
+    animation-delay: 0.6s; 
+} 
+ 
+h1 span:nth-child(2) { 
+    animation-delay: 0.9s; 
+} 
+ 
+h1 span:nth-child(3) { 
+    animation-delay: 1.2s; 
+} 
+ 
+ 
+/* ================================ 
+   FINAL WORD 
+================================ */ 
+ 
+h1 span:last-child { 
+    color: #c4a1ff; 
+ 
+    text-shadow: 
+        0 2px 3px #000, 
+        0 0 10px rgba(168, 85, 247, 0.7), 
+        0 0 30px rgba(109, 40, 217, 0.45); 
+} 
+ 
+ 
+/* ================================ 
+   SUBTITLE 
+================================ */ 
+ 
+.subtitle { 
+    margin-top: 22px; 
+ 
+    font-family: "Orbitron", sans-serif; 
+ 
+    font-size: clamp(0.5rem, 0.8vw, 0.85rem); 
+ 
+    letter-spacing: clamp(3px, 0.6vw, 8px); 
+ 
+    color: #82788d; 
+ 
+    opacity: 0; 
+ 
+    animation: 
+        subtitleReveal 
+        1.5s 
+        ease-out 
+        1.8s 
+        forwards; 
+} 
+ 
+ 
+/* ================================ 
+   INTRO → TOP HEADER 
+================================ */ 
+ 
+@keyframes introToHeader { 
+ 
+    /* START — LARGE AND CENTERED */ 
+    0% { 
+        top: 50%; 
+        left: 50%; 
+ 
+        transform: 
+            translate(-50%, -50%) 
+            scale(1.08); 
+    } 
+ 
+    /* INTRO FINISHES */ 
+    55% { 
+        top: 50%; 
+        left: 50%; 
+ 
+        transform: 
+            translate(-50%, -50%) 
+            scale(1); 
+    } 
+ 
+    /* MOVE TO TOP — SAME SIZE */ 
+    100% { 
+        top: 45px; 
+        left: 50%; 
+ 
+        transform: 
+            translate(-50%, 0) 
+            scale(1); 
+    } 
+} 
+ 
+ 
+/* ================================ 
+   TITLE REVEAL 
+================================ */ 
+ 
+@keyframes titleReveal { 
+ 
+    from { 
+        opacity: 0; 
+ 
+        letter-spacing: 10px; 
+ 
+        filter: blur(6px); 
+    } 
+ 
+    to { 
+        opacity: 1; 
+ 
+        letter-spacing: 
+            clamp(1px, 0.25vw, 5px); 
+ 
+        filter: blur(0); 
+    } 
+} 
+ 
+ 
+/* ================================ 
+   WORD REVEAL 
+================================ */ 
+ 
+@keyframes wordReveal { 
+ 
+    from { 
+        opacity: 0; 
+ 
+        transform: translateY(35px); 
+ 
+        filter: blur(8px); 
+    } 
+ 
+    to { 
+        opacity: 1; 
+ 
+        transform: translateY(0); 
+ 
+        filter: blur(0); 
+    } 
+} 
+ 
+ 
+/* ================================ 
+   SUBTITLE REVEAL 
+================================ */ 
+ 
+@keyframes subtitleReveal { 
+ 
+    from { 
+        opacity: 0; 
+ 
+        letter-spacing: 15px; 
+    } 
+ 
+    to { 
+        opacity: 1; 
+ 
+        letter-spacing: 
+            clamp(3px, 0.6vw, 8px); 
+    } 
+} 
+ 
+ 
+/* ================================ 
+   LINE REVEAL 
+================================ */ 
+ 
+@keyframes lineReveal { 
+ 
+    from { 
+        transform: scaleX(0); 
+ 
+        opacity: 0; 
+    } 
+ 
+    to { 
+        transform: scaleX(1); 
+ 
+        opacity: 1; 
+    } 
+} 
+ 
+ 
+/* ================================ 
+   SLASH REVEAL 
+================================ */ 
+ 
+@keyframes slashReveal { 
+ 
+    from { 
+        opacity: 0; 
+ 
+        transform: 
+            rotate(-8deg) 
+            scaleX(0); 
+    } 
+ 
+    to { 
+        opacity: 1; 
+ 
+        transform: 
+            rotate(-8deg) 
+            scaleX(1); 
+    } 
+} 
+ 
+ 
+/* ================================ 
+   DARK PULSE 
+================================ */ 
+ 
+@keyframes darkPulse { 
+ 
+    0%, 100% { 
+        filter: brightness(0.9); 
+    } 
+ 
+    50% { 
+        filter: brightness(1.15); 
+    } 
+} 
+ 
+ 
+/* ================================ 
+   ATMOSPHERE 
+================================ */ 
+ 
+@keyframes atmosphere { 
+ 
+    from { 
+        transform: scale(1); 
+        opacity: 0.7; 
+    } 
+ 
+    to { 
+        transform: scale(1.12); 
+        opacity: 1; 
+    } 
+} 
+ 
+ 
+/* ================================ 
+   FOG MOVEMENT 
+================================ */ 
+ 
+@keyframes fogMove { 
+ 
+    from { 
+        transform: translateX(0); 
+    } 
+ 
+    to { 
+        transform: translateX(250px); 
+    } 
+} 
+ 
+@keyframes fogMoveReverse { 
+ 
+    from { 
+        transform: translateX(0); 
+    } 
+ 
+    to { 
+        transform: translateX(-250px); 
+    } 
+} 
+ 
+ 
+/* ================================ 
+   MOBILE 
+================================ */ 
+ 
+@media (max-width: 900px) { 
+ 
+    h1 { 
+        gap: 5px; 
+ 
+        font-size: 2.5vw; 
+ 
+        letter-spacing: 1px; 
+    } 
+ 
+    .subtitle { 
+        font-size: 0.55rem; 
+    } 
+ 
+    @keyframes introToHeader { 
+ 
+        0% { 
+            top: 50%; 
+            left: 50%; 
+ 
+            transform: 
+                translate(-50%, -50%) 
+                scale(1.08); 
+        } 
+ 
+        55% { 
+            top: 50%; 
+            left: 50%; 
+ 
+            transform: 
+                translate(-50%, -50%) 
+                scale(1); 
+        } 
+ 
+        100% { 
+            top: 35px; 
+            left: 50%; 
+ 
+            transform: 
+                translate(-50%, 0) 
+                scale(1); 
+        } 
+    } 
 }
