@@ -60,14 +60,12 @@ body {
 
 .fog {
     position: absolute;
-
     width: 600px;
     height: 180px;
 
     background: rgba(100, 20, 130, 0.08);
 
     filter: blur(70px);
-
     border-radius: 50%;
 }
 
@@ -75,12 +73,7 @@ body {
     left: -200px;
     bottom: 10%;
 
-    animation:
-        fogMove
-        12s
-        ease-in-out
-        infinite
-        alternate;
+    animation: fogMove 12s ease-in-out infinite alternate;
 }
 
 .fog-two {
@@ -89,12 +82,7 @@ body {
 
     background: rgba(30, 50, 120, 0.08);
 
-    animation:
-        fogMoveReverse
-        15s
-        ease-in-out
-        infinite
-        alternate;
+    animation: fogMoveReverse 15s ease-in-out infinite alternate;
 }
 
 
@@ -109,25 +97,23 @@ body {
     left: 50%;
 
     width: 100%;
+    padding: 30px;
 
     text-align: center;
-
-    padding: 30px;
 
     z-index: 2;
 
     /*
        IMPORTANT:
-       The welcome container itself
-       only moves.
-       It never changes size.
+       No scale.
+       No transform animation.
+       The entire group only changes position.
     */
 
-    transform:
-        translate(-50%, -50%);
+    transform: translate(-50%, -50%);
 
     animation:
-        introToHeader
+        moveToTop
         6s
         cubic-bezier(.16, 1, .3, 1)
         forwards;
@@ -158,9 +144,7 @@ body {
         transparent
     );
 
-    transform:
-        rotate(-8deg)
-        scaleX(0);
+    transform: rotate(-8deg) scaleX(0);
 
     opacity: 0;
 
@@ -223,6 +207,10 @@ h1 {
 
     font-weight: 900;
 
+    /*
+       This is the actual title size.
+       It NEVER changes during the move-to-top animation.
+    */
     font-size: clamp(1rem, 3vw, 3.5rem);
 
     letter-spacing: clamp(1px, 0.25vw, 5px);
@@ -247,7 +235,7 @@ h1 {
 
 
 /* ================================
-   INDIVIDUAL WORDS
+   WORDS
 ================================ */
 
 h1 span {
@@ -323,51 +311,27 @@ h1 span:last-child {
 
 
 /* ================================
-   INTRO → TOP
+   MOVE ONLY — NEVER SCALE
 ================================ */
 
-@keyframes introToHeader {
-
-    /*
-       START
-       Center of screen
-       NORMAL SIZE
-    */
+@keyframes moveToTop {
 
     0% {
         top: 50%;
         left: 50%;
-
-        transform:
-            translate(-50%, -50%);
+        transform: translate(-50%, -50%);
     }
-
-
-    /*
-       HOLD IN CENTER
-       EXACT SAME SIZE
-    */
 
     55% {
         top: 50%;
         left: 50%;
-
-        transform:
-            translate(-50%, -50%);
+        transform: translate(-50%, -50%);
     }
-
-
-    /*
-       MOVE TO TOP
-       EXACT SAME SIZE
-    */
 
     100% {
         top: 45px;
         left: 50%;
-
-        transform:
-            translate(-50%, 0);
+        transform: translate(-50%, 0);
     }
 }
 
@@ -380,18 +344,13 @@ h1 span:last-child {
 
     from {
         opacity: 0;
-
         letter-spacing: 10px;
-
         filter: blur(6px);
     }
 
     to {
         opacity: 1;
-
-        letter-spacing:
-            clamp(1px, 0.25vw, 5px);
-
+        letter-spacing: clamp(1px, 0.25vw, 5px);
         filter: blur(0);
     }
 }
@@ -405,17 +364,13 @@ h1 span:last-child {
 
     from {
         opacity: 0;
-
         transform: translateY(35px);
-
         filter: blur(8px);
     }
 
     to {
         opacity: 1;
-
         transform: translateY(0);
-
         filter: blur(0);
     }
 }
@@ -429,15 +384,12 @@ h1 span:last-child {
 
     from {
         opacity: 0;
-
         letter-spacing: 15px;
     }
 
     to {
         opacity: 1;
-
-        letter-spacing:
-            clamp(3px, 0.6vw, 8px);
+        letter-spacing: clamp(3px, 0.6vw, 8px);
     }
 }
 
@@ -450,13 +402,11 @@ h1 span:last-child {
 
     from {
         transform: scaleX(0);
-
         opacity: 0;
     }
 
     to {
         transform: scaleX(1);
-
         opacity: 1;
     }
 }
@@ -470,18 +420,12 @@ h1 span:last-child {
 
     from {
         opacity: 0;
-
-        transform:
-            rotate(-8deg)
-            scaleX(0);
+        transform: rotate(-8deg) scaleX(0);
     }
 
     to {
         opacity: 1;
-
-        transform:
-            rotate(-8deg)
-            scaleX(1);
+        transform: rotate(-8deg) scaleX(1);
     }
 }
 
@@ -510,13 +454,11 @@ h1 span:last-child {
 
     from {
         transform: scale(1);
-
         opacity: 0.7;
     }
 
     to {
         transform: scale(1.12);
-
         opacity: 1;
     }
 }
@@ -557,45 +499,11 @@ h1 span:last-child {
 
     h1 {
         gap: 5px;
-
         font-size: 2.5vw;
-
         letter-spacing: 1px;
     }
 
     .subtitle {
         font-size: 0.55rem;
-    }
-
-    /*
-       Same size on mobile too.
-       Only the position changes.
-    */
-
-    @keyframes introToHeader {
-
-        0% {
-            top: 50%;
-            left: 50%;
-
-            transform:
-                translate(-50%, -50%);
-        }
-
-        55% {
-            top: 50%;
-            left: 50%;
-
-            transform:
-                translate(-50%, -50%);
-        }
-
-        100% {
-            top: 35px;
-            left: 50%;
-
-            transform:
-                translate(-50%, 0);
-        }
     }
 }
