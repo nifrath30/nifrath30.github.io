@@ -92,7 +92,7 @@ body {
 
 
 /* ================================
-   MAIN CONTENT GROUP
+   MAIN CONTENT
 ================================ */
 
 .welcome {
@@ -105,10 +105,6 @@ body {
 
     padding: 30px;
 
-    /*
-       The ENTIRE group moves:
-       title + subtitle + slash + lines
-    */
     animation:
         welcomeJourney 5.5s
         cubic-bezier(.16, 1, .3, 1)
@@ -120,13 +116,10 @@ body {
    ENERGY SLASH
 ================================ */
 
-.slash {
-    position: absolute;
+.welcome::before {
+    content: "";
 
-    /*
-       The slash is now positioned
-       relative to .welcome.
-    */
+    position: absolute;
 
     width: 120%;
     height: 2px;
@@ -145,19 +138,16 @@ body {
         transparent
     );
 
-    transform: rotate(-8deg) scaleX(0);
+    transform:
+        rotate(-8deg)
+        scaleX(0);
 
     opacity: 0;
 
-    /*
-       ONLY the slash reveal is animated here.
-       Its movement to the top comes automatically
-       because .welcome moves.
-    */
+    pointer-events: none;
+
     animation:
         slashReveal 2s ease-out 0.8s forwards;
-
-    pointer-events: none;
 }
 
 
@@ -307,15 +297,11 @@ h1 span:last-child {
 
 
 /* ================================
-   MAIN JOURNEY
+   WELCOME JOURNEY
 ================================ */
 
 @keyframes welcomeJourney {
 
-    /*
-       START
-       Center of screen
-    */
     0% {
         transform:
             translateY(0)
@@ -324,10 +310,6 @@ h1 span:last-child {
         opacity: 0;
     }
 
-
-    /*
-       TITLE BECOMES VISIBLE
-    */
     30% {
         transform:
             translateY(0)
@@ -336,10 +318,6 @@ h1 span:last-child {
         opacity: 1;
     }
 
-
-    /*
-       HOLD IN CENTER
-    */
     60% {
         transform:
             translateY(0)
@@ -348,13 +326,6 @@ h1 span:last-child {
         opacity: 1;
     }
 
-
-    /*
-       MOVE EVERYTHING TO TOP
-       
-       Because slash is INSIDE .welcome,
-       it moves exactly the same distance.
-    */
     100% {
         transform:
             translateY(calc(-50vh + 70px))
@@ -374,10 +345,6 @@ h1 span:last-child {
     from {
         opacity: 0;
 
-        /*
-           Keeps your cinematic
-           letter-spacing effect.
-        */
         letter-spacing: 10px;
 
         filter: blur(6px);
@@ -533,7 +500,6 @@ h1 span:last-child {
         transform: translateX(250px);
     }
 }
-
 
 @keyframes fogMoveReverse {
 
