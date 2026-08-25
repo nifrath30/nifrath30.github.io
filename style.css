@@ -1,4 +1,4 @@
-* {
+** {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -135,7 +135,14 @@ body {
 
     padding: 30px;
 
-    animation: entrance 1.8s cubic-bezier(.16, 1, .3, 1) forwards;
+    /*
+       Starts in the center,
+       then smoothly moves toward
+       the top of the screen.
+    */
+    animation: welcomeJourney 5.5s
+        cubic-bezier(.16, 1, .3, 1)
+        forwards;
 }
 
 
@@ -185,11 +192,6 @@ h1 {
 
     font-weight: 900;
 
-    /*
-       Responsive size:
-       It automatically becomes smaller
-       on smaller screens.
-    */
     font-size: clamp(1rem, 3vw, 3.5rem);
 
     letter-spacing: clamp(1px, 0.25vw, 5px);
@@ -237,7 +239,7 @@ h1 span:nth-child(3) {
 }
 
 
-/* Final words get purple energy */
+/* Final word gets purple energy */
 
 h1 span:last-child {
     color: #c4a1ff;
@@ -271,29 +273,60 @@ h1 span:last-child {
 
 
 /* ================================
-   ANIMATIONS
+   WELCOME JOURNEY
 ================================ */
 
-@keyframes entrance {
-    from {
-        transform: scale(1.08);
+/*
+   0%       = hidden / slightly large
+   30%      = center and visible
+   60%      = stays centered
+   100%     = moves to the top
+*/
+
+@keyframes welcomeJourney {
+
+    0% {
+        transform: scale(1.08) translateY(0);
         opacity: 0;
     }
 
-    to {
-        transform: scale(1);
+    30% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+
+    60% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) translateY(calc(-50vh + 70px));
         opacity: 1;
     }
 }
 
 
+/* ================================
+   TITLE REVEAL
+================================ */
+
 @keyframes titleReveal {
+
     from {
         opacity: 0;
 
-        letter-spacing: 20px;
+        /*
+           Reduced from 20px
+           for smoother mobile rendering.
+        */
+        letter-spacing: 10px;
 
-        filter: blur(12px);
+        /*
+           Reduced from 12px
+           to avoid heavy blur.
+        */
+        filter: blur(6px);
     }
 
     to {
@@ -306,7 +339,12 @@ h1 span:last-child {
 }
 
 
+/* ================================
+   WORD REVEAL
+================================ */
+
 @keyframes wordReveal {
+
     from {
         opacity: 0;
 
@@ -325,7 +363,12 @@ h1 span:last-child {
 }
 
 
+/* ================================
+   SUBTITLE REVEAL
+================================ */
+
 @keyframes subtitleReveal {
+
     from {
         opacity: 0;
 
@@ -340,7 +383,12 @@ h1 span:last-child {
 }
 
 
+/* ================================
+   LINE REVEAL
+================================ */
+
 @keyframes lineReveal {
+
     from {
         transform: scaleX(0);
 
@@ -355,7 +403,12 @@ h1 span:last-child {
 }
 
 
+/* ================================
+   ENERGY SLASH
+================================ */
+
 @keyframes slashReveal {
+
     from {
         transform: rotate(-8deg) scaleX(0);
 
@@ -370,7 +423,12 @@ h1 span:last-child {
 }
 
 
+/* ================================
+   DARK PULSE
+================================ */
+
 @keyframes darkPulse {
+
     0%, 100% {
         filter: brightness(0.9);
     }
@@ -381,7 +439,12 @@ h1 span:last-child {
 }
 
 
+/* ================================
+   ATMOSPHERE
+================================ */
+
 @keyframes atmosphere {
+
     from {
         transform: scale(1);
 
@@ -396,7 +459,12 @@ h1 span:last-child {
 }
 
 
+/* ================================
+   FOG MOVEMENT
+================================ */
+
 @keyframes fogMove {
+
     from {
         transform: translateX(0);
     }
@@ -408,6 +476,7 @@ h1 span:last-child {
 
 
 @keyframes fogMoveReverse {
+
     from {
         transform: translateX(0);
     }
