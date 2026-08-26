@@ -28,13 +28,16 @@ body {
 .background {
     position: fixed;
     inset: 0;
+
     overflow: hidden;
     pointer-events: none;
+
     z-index: 0;
 }
 
 .background::before {
     content: "";
+
     position: absolute;
     inset: 0;
 
@@ -44,13 +47,19 @@ body {
             rgba(102, 0, 153, 0.12),
             transparent 30%
         ),
+
         radial-gradient(
             circle at 80% 70%,
             rgba(20, 50, 120, 0.10),
             transparent 30%
         );
 
-    animation: atmosphere 8s ease-in-out infinite alternate;
+    animation:
+        atmosphere
+        8s
+        ease-in-out
+        infinite
+        alternate;
 }
 
 
@@ -60,12 +69,14 @@ body {
 
 .fog {
     position: absolute;
+
     width: 600px;
     height: 180px;
 
     background: rgba(100, 20, 130, 0.08);
 
     filter: blur(70px);
+
     border-radius: 50%;
 }
 
@@ -73,7 +84,12 @@ body {
     left: -200px;
     bottom: 10%;
 
-    animation: fogMove 12s ease-in-out infinite alternate;
+    animation:
+        fogMove
+        12s
+        ease-in-out
+        infinite
+        alternate;
 }
 
 .fog-two {
@@ -82,7 +98,12 @@ body {
 
     background: rgba(30, 50, 120, 0.08);
 
-    animation: fogMoveReverse 15s ease-in-out infinite alternate;
+    animation:
+        fogMoveReverse
+        15s
+        ease-in-out
+        infinite
+        alternate;
 }
 
 
@@ -97,18 +118,12 @@ body {
     left: 50%;
 
     width: 100%;
+
     padding: 30px;
 
     text-align: center;
 
     z-index: 2;
-
-    /*
-       IMPORTANT:
-       No scale.
-       No transform animation.
-       The entire group only changes position.
-    */
 
     transform: translate(-50%, -50%);
 
@@ -121,7 +136,7 @@ body {
 
 
 /* ================================
-   ENERGY SLASH
+   ENERGY SLASH / BIRD
 ================================ */
 
 .slash {
@@ -144,15 +159,24 @@ body {
         transparent
     );
 
-    transform: rotate(-8deg) scaleX(0);
-
     opacity: 0;
+
+    transform:
+        rotate(-8deg)
+        scaleX(0);
+
+    transform-origin: center;
 
     animation:
         slashReveal
         2s
         ease-out
         0.8s
+        forwards,
+
+        slashMoveToTop
+        6s
+        cubic-bezier(.16, 1, .3, 1)
         forwards;
 
     pointer-events: none;
@@ -207,10 +231,6 @@ h1 {
 
     font-weight: 900;
 
-    /*
-       This is the actual title size.
-       It NEVER changes during the move-to-top animation.
-    */
     font-size: clamp(1rem, 3vw, 3.5rem);
 
     letter-spacing: clamp(1px, 0.25vw, 5px);
@@ -311,7 +331,7 @@ h1 span:last-child {
 
 
 /* ================================
-   MOVE ONLY — NEVER SCALE
+   TITLE MOVE TO TOP
 ================================ */
 
 @keyframes moveToTop {
@@ -319,19 +339,25 @@ h1 span:last-child {
     0% {
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+
+        transform:
+            translate(-50%, -50%);
     }
 
     55% {
         top: 50%;
         left: 50%;
-        transform: translate(-50%, -50%);
+
+        transform:
+            translate(-50%, -50%);
     }
 
     100% {
         top: 45px;
         left: 50%;
-        transform: translate(-50%, 0);
+
+        transform:
+            translate(-50%, 0);
     }
 }
 
@@ -344,13 +370,18 @@ h1 span:last-child {
 
     from {
         opacity: 0;
+
         letter-spacing: 10px;
+
         filter: blur(6px);
     }
 
     to {
         opacity: 1;
-        letter-spacing: clamp(1px, 0.25vw, 5px);
+
+        letter-spacing:
+            clamp(1px, 0.25vw, 5px);
+
         filter: blur(0);
     }
 }
@@ -364,13 +395,19 @@ h1 span:last-child {
 
     from {
         opacity: 0;
-        transform: translateY(35px);
+
+        transform:
+            translateY(35px);
+
         filter: blur(8px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
+
+        transform:
+            translateY(0);
+
         filter: blur(0);
     }
 }
@@ -384,12 +421,15 @@ h1 span:last-child {
 
     from {
         opacity: 0;
+
         letter-spacing: 15px;
     }
 
     to {
         opacity: 1;
-        letter-spacing: clamp(3px, 0.6vw, 8px);
+
+        letter-spacing:
+            clamp(3px, 0.6vw, 8px);
     }
 }
 
@@ -402,11 +442,13 @@ h1 span:last-child {
 
     from {
         transform: scaleX(0);
+
         opacity: 0;
     }
 
     to {
         transform: scaleX(1);
+
         opacity: 1;
     }
 }
@@ -418,14 +460,48 @@ h1 span:last-child {
 
 @keyframes slashReveal {
 
-    from {
+    0% {
         opacity: 0;
-        transform: rotate(-8deg) scaleX(0);
+
+        transform:
+            rotate(-8deg)
+            scaleX(0);
     }
 
-    to {
+    30% {
         opacity: 1;
-        transform: rotate(-8deg) scaleX(1);
+
+        transform:
+            rotate(-8deg)
+            scaleX(1);
+    }
+
+    100% {
+        opacity: 1;
+
+        transform:
+            rotate(-8deg)
+            scaleX(1);
+    }
+}
+
+
+/* ================================
+   SLASH MOVEMENT
+================================ */
+
+@keyframes slashMoveToTop {
+
+    0% {
+        top: 50%;
+    }
+
+    55% {
+        top: 50%;
+    }
+
+    100% {
+        top: clamp(170px, 21vh, 210px);
     }
 }
 
@@ -436,7 +512,8 @@ h1 span:last-child {
 
 @keyframes darkPulse {
 
-    0%, 100% {
+    0%,
+    100% {
         filter: brightness(0.9);
     }
 
@@ -454,11 +531,13 @@ h1 span:last-child {
 
     from {
         transform: scale(1);
+
         opacity: 0.7;
     }
 
     to {
         transform: scale(1.12);
+
         opacity: 1;
     }
 }
@@ -491,23 +570,6 @@ h1 span:last-child {
 }
 
 
-
-/* ================================
-   MOBILE
-================================ */
-
-@media (max-width: 900px) {
-
-    h1 {
-        gap: 5px;
-        font-size: 2.5vw;
-        letter-spacing: 1px;
-    }
-
-    .subtitle {
-        font-size: 0.55rem;
-    }
-}
 /* ================================
    ENTER GAME BUTTON
 ================================ */
@@ -528,7 +590,7 @@ h1 span:last-child {
 
     text-decoration: none;
 
-    font-family: 'Orbitron', sans-serif;
+    font-family: "Orbitron", sans-serif;
 
     font-size: 11px;
 
@@ -562,4 +624,35 @@ h1 span:last-child {
 
 .enter-game-button:active {
     transform: scale(0.96);
+}
+
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 900px) {
+
+    h1 {
+        gap: 5px;
+
+        font-size: 2.5vw;
+
+        letter-spacing: 1px;
+    }
+
+    .subtitle {
+        font-size: 0.55rem;
+    }
+
+    .enter-game-button {
+        left: 5vw;
+        top: 68%;
+
+        padding: 12px 24px;
+
+        font-size: 10px;
+
+        letter-spacing: 2px;
+    }
 }
