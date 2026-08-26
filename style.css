@@ -713,3 +713,27 @@ h1 span:last-child {
         letter-spacing: 2px;
     }
 }
+.nifraths {
+    position: absolute;
+
+    top: 18px;
+    right: 25px;
+
+    z-index: 30;
+
+    font-family: "Cinzel", serif;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+    color: rgba(210, 170, 255, 0.9);
+
+    text-shadow:
+       0 0 8px rgba(192, 132, 252, 0.45);
+
+    pointer-events: none;
+
+    white-space: nowrap;
+}
