@@ -1,5 +1,6 @@
 // ============================================================
-// ANIME RUNNER - COMPLETE GAME.JS
+// ANIME RUNNER
+// PC + MOBILE VERSION
 // ============================================================
 
 
@@ -14,22 +15,44 @@ const gameScreen = document.getElementById("gameScreen");
 const endScreen = document.getElementById("endScreen");
 const surpriseScreen = document.getElementById("surpriseScreen");
 
-const startIntroButton = document.getElementById("startIntroButton");
-const nameButton = document.getElementById("nameButton");
-const playButton = document.getElementById("playButton");
-const retryButton = document.getElementById("retryButton");
+const startIntroButton =
+    document.getElementById("startIntroButton");
 
-const playerNameInput = document.getElementById("playerName");
-const nameError = document.getElementById("nameError");
+const nameButton =
+    document.getElementById("nameButton");
 
-const welcomeText = document.getElementById("welcomeText");
-const gamePlayerName = document.getElementById("gamePlayerName");
-const timerElement = document.getElementById("timer");
-const endMessage = document.getElementById("endMessage");
+const playButton =
+    document.getElementById("playButton");
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const retryButton =
+    document.getElementById("retryButton");
 
+const playerNameInput =
+    document.getElementById("playerName");
+
+const nameError =
+    document.getElementById("nameError");
+
+const welcomeText =
+    document.getElementById("welcomeText");
+
+const gamePlayerName =
+    document.getElementById("gamePlayerName");
+
+const timerElement =
+    document.getElementById("timer");
+
+const endMessage =
+    document.getElementById("endMessage");
+
+const canvas =
+    document.getElementById("gameCanvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+
+// Keep sprites sharp
 ctx.imageSmoothingEnabled = false;
 
 
@@ -48,8 +71,8 @@ function showScreen(screen) {
         surpriseScreen
     ];
 
-    screens.forEach(screenItem => {
-        screenItem.classList.remove("active");
+    screens.forEach(item => {
+        item.classList.remove("active");
     });
 
     screen.classList.add("active");
@@ -74,17 +97,17 @@ startIntroButton.addEventListener("click", () => {
     setTimeout(() => {
         playerNameInput.focus();
     }, 300);
-
 });
 
 
 // ============================================================
-// NAME SCREEN
+// NAME
 // ============================================================
 
 nameButton.addEventListener("click", () => {
 
-    const name = playerNameInput.value.trim();
+    const name =
+        playerNameInput.value.trim();
 
     if (name === "") {
 
@@ -98,33 +121,37 @@ nameButton.addEventListener("click", () => {
 
     nameError.textContent = "";
 
-    welcomeText.textContent = playerName;
+    welcomeText.textContent =
+        playerName;
 
     showScreen(lobbyScreen);
 });
 
 
-playerNameInput.addEventListener("keydown", event => {
+playerNameInput.addEventListener(
+    "keydown",
+    event => {
 
-    if (event.key === "Enter") {
-        nameButton.click();
+        if (event.key === "Enter") {
+            nameButton.click();
+        }
     }
-
-});
-
-
-// ============================================================
-// PLAY
-// ============================================================
-
-playButton.addEventListener("click", startGame);
+);
 
 
 // ============================================================
-// RETRY
+// START / RETRY
 // ============================================================
 
-retryButton.addEventListener("click", startGame);
+playButton.addEventListener(
+    "click",
+    startGame
+);
+
+retryButton.addEventListener(
+    "click",
+    startGame
+);
 
 
 // ============================================================
@@ -133,10 +160,11 @@ retryButton.addEventListener("click", startGame);
 
 function resizeCanvas() {
 
-    const dpr = Math.min(
-        window.devicePixelRatio || 1,
-        2
-    );
+    const dpr =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
 
     canvas.width =
         window.innerWidth * dpr;
@@ -163,7 +191,10 @@ function resizeCanvas() {
 }
 
 
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
 
 resizeCanvas();
 
@@ -172,9 +203,11 @@ resizeCanvas();
 // CHARACTER SPRITE
 // ============================================================
 
-const playerSprite = new Image();
+const playerSprite =
+    new Image();
 
-playerSprite.src = "assets/character-run.png";
+playerSprite.src =
+    "assets/character-run.png";
 
 let spriteLoaded = false;
 
@@ -183,7 +216,7 @@ playerSprite.onload = () => {
     spriteLoaded = true;
 
     console.log(
-        "Character loaded:",
+        "Character sprite loaded:",
         playerSprite.naturalWidth,
         "x",
         playerSprite.naturalHeight
@@ -193,7 +226,7 @@ playerSprite.onload = () => {
 playerSprite.onerror = () => {
 
     console.error(
-        "Could not load assets/character-run.png"
+        "ERROR: assets/character-run.png could not be loaded."
     );
 };
 
@@ -251,7 +284,9 @@ const player = {
 
 const FRAME_COUNT = 8;
 
-// Crop area of the character inside your PNG.
+// Adjust these ONLY if your sprite sheet has
+// a different vertical layout.
+
 const SPRITE_SOURCE_Y = 420;
 
 const SPRITE_SOURCE_HEIGHT = 380;
@@ -278,7 +313,9 @@ function startGame() {
 
     if (gameAnimationId !== null) {
 
-        cancelAnimationFrame(gameAnimationId);
+        cancelAnimationFrame(
+            gameAnimationId
+        );
 
         gameAnimationId = null;
     }
@@ -287,20 +324,16 @@ function startGame() {
 
     elapsedTime = 0;
 
-    gameStartTime = performance.now();
-
-    lastTime = performance.now();
-
     obstacles = [];
 
     obstacleTimer = 0;
 
     obstacleInterval =
-        1.7 + Math.random() * 0.7;
+        1.7 +
+        Math.random() * 0.7;
 
     gameSpeed = 420;
 
-    // Reset player
     player.frame = 0;
 
     player.frameTimer = 0;
@@ -308,6 +341,8 @@ function startGame() {
     player.velocityY = 0;
 
     player.grounded = true;
+
+    resizeCanvas();
 
     groundY =
         window.innerHeight - 105;
@@ -318,15 +353,16 @@ function startGame() {
     gamePlayerName.textContent =
         playerName;
 
-    timerElement.textContent = "30";
+    timerElement.textContent =
+        "30";
 
     showScreen(gameScreen);
 
-    resizeCanvas();
+    lastTime =
+        performance.now();
 
-    lastTime = performance.now();
-
-    gameStartTime = performance.now();
+    gameStartTime =
+        performance.now();
 
     gameAnimationId =
         requestAnimationFrame(gameLoop);
@@ -343,12 +379,14 @@ function gameLoop(currentTime) {
         return;
     }
 
-    const deltaTime = Math.min(
-        (currentTime - lastTime) / 1000,
-        0.033
-    );
+    const deltaTime =
+        Math.min(
+            (currentTime - lastTime) / 1000,
+            0.033
+        );
 
-    lastTime = currentTime;
+    lastTime =
+        currentTime;
 
     elapsedTime =
         (currentTime - gameStartTime) / 1000;
@@ -358,17 +396,18 @@ function gameLoop(currentTime) {
     // TIMER
     // ========================================================
 
-    const remaining = Math.max(
-        0,
-        Math.ceil(30 - elapsedTime)
-    );
+    const remaining =
+        Math.max(
+            0,
+            Math.ceil(30 - elapsedTime)
+        );
 
     timerElement.textContent =
         remaining;
 
 
     // ========================================================
-    // 30 SECOND SUCCESS
+    // SUCCESS
     // ========================================================
 
     if (elapsedTime >= 30) {
@@ -399,7 +438,9 @@ function gameLoop(currentTime) {
     drawGame();
 
     gameAnimationId =
-        requestAnimationFrame(gameLoop);
+        requestAnimationFrame(
+            gameLoop
+        );
 }
 
 
@@ -413,13 +454,15 @@ function updatePlayer(deltaTime) {
         window.innerHeight - 105;
 
     player.velocityY +=
-        player.gravity * deltaTime;
+        player.gravity *
+        deltaTime;
 
     player.y +=
-        player.velocityY * deltaTime;
+        player.velocityY *
+        deltaTime;
 
 
-    // Ground collision
+    // Ground
     if (
         player.y >=
         groundY - player.height
@@ -449,7 +492,7 @@ function jump() {
         return;
     }
 
-    // No double jumping
+    // Prevent double jump
     if (!player.grounded) {
         return;
     }
@@ -462,29 +505,84 @@ function jump() {
 
 
 // ============================================================
-// KEYBOARD CONTROLS
+// PC KEYBOARD CONTROLS
 // ============================================================
 
-window.addEventListener("keydown", event => {
+window.addEventListener(
+    "keydown",
+    event => {
 
-    if (
-        document.activeElement ===
-        playerNameInput
-    ) {
-        return;
+        if (
+            document.activeElement ===
+            playerNameInput
+        ) {
+            return;
+        }
+
+        if (
+            event.code === "Space" ||
+            event.code === "ArrowUp"
+        ) {
+
+            event.preventDefault();
+
+            jump();
+        }
     }
+);
 
-    if (
-        event.code === "Space" ||
-        event.code === "ArrowUp"
-    ) {
+
+// ============================================================
+// PHONE TOUCH CONTROL
+// ============================================================
+
+// This is the important mobile control.
+
+gameScreen.addEventListener(
+    "touchstart",
+    event => {
+
+        if (!gameRunning) {
+            return;
+        }
 
         event.preventDefault();
 
         jump();
-    }
 
-});
+    },
+    {
+        passive: false
+    }
+);
+
+
+// ============================================================
+// PHONE + PC POINTER CONTROL
+// ============================================================
+
+// This also allows tapping/clicking the game.
+
+gameScreen.addEventListener(
+    "pointerdown",
+    event => {
+
+        if (!gameRunning) {
+            return;
+        }
+
+        // Touch/stylus is handled here.
+        // Mouse is also supported.
+
+        event.preventDefault();
+
+        jump();
+
+    },
+    {
+        passive: false
+    }
+);
 
 
 // ============================================================
@@ -497,7 +595,8 @@ function updateSprite(deltaTime) {
         return;
     }
 
-    player.frameTimer += deltaTime;
+    player.frameTimer +=
+        deltaTime;
 
     if (
         player.frameTimer >=
@@ -526,10 +625,12 @@ function updateSprite(deltaTime) {
 function createObstacle() {
 
     const width =
-        45 + Math.random() * 20;
+        45 +
+        Math.random() * 20;
 
     const height =
-        50 + Math.random() * 30;
+        50 +
+        Math.random() * 30;
 
     obstacles.push({
 
@@ -554,7 +655,8 @@ function createObstacle() {
 
 function updateObstacles(deltaTime) {
 
-    obstacleTimer += deltaTime;
+    obstacleTimer +=
+        deltaTime;
 
     if (
         obstacleTimer >=
@@ -571,37 +673,40 @@ function updateObstacles(deltaTime) {
     }
 
 
-    obstacles.forEach(obstacle => {
+    obstacles.forEach(
+        obstacle => {
 
-        obstacle.x -=
-            gameSpeed * deltaTime;
+            obstacle.x -=
+                gameSpeed *
+                deltaTime;
 
-    });
+        }
+    );
 
 
-    obstacles = obstacles.filter(obstacle => {
+    obstacles =
+        obstacles.filter(
+            obstacle => {
 
-        return (
-            obstacle.x +
-            obstacle.width >
-            -100
+                return (
+                    obstacle.x +
+                    obstacle.width >
+                    -100
+                );
+            }
         );
-
-    });
 }
 
 
 // ============================================================
-// COLLISION DETECTION
+// COLLISION
 // ============================================================
 
 function checkCollisions() {
 
-    /*
-        Smaller hitbox than the visible character.
-        This prevents transparent sprite space from
-        causing false collisions.
-    */
+    // Smaller hitbox so transparent
+    // sprite space doesn't cause
+    // unwanted collisions.
 
     const playerBox = {
 
@@ -619,7 +724,9 @@ function checkCollisions() {
     };
 
 
-    for (const obstacle of obstacles) {
+    for (
+        const obstacle of obstacles
+    ) {
 
         const obstacleBox = {
 
@@ -687,7 +794,7 @@ function drawGame() {
 
 
     // ========================================================
-    // NIGHT SKY
+    // SKY
     // ========================================================
 
     const sky =
@@ -718,7 +825,8 @@ function drawGame() {
         "#05070d"
     );
 
-    ctx.fillStyle = sky;
+    ctx.fillStyle =
+        sky;
 
     ctx.fillRect(
         0,
@@ -913,7 +1021,7 @@ function drawGame() {
 
 
     // ========================================================
-    // ROAD MARKINGS
+    // ROAD
     // ========================================================
 
     ctx.fillStyle =
@@ -953,7 +1061,7 @@ function drawGame() {
 
 
     // ========================================================
-    // CHARACTER
+    // PLAYER
     // ========================================================
 
     drawPlayer();
@@ -1002,7 +1110,6 @@ function drawStars(
         );
 
         ctx.fill();
-
     });
 }
 
@@ -1150,7 +1257,8 @@ function drawMountains(
 
     trees.forEach(x => {
 
-        const base = groundY;
+        const base =
+            groundY;
 
         ctx.beginPath();
 
@@ -1180,103 +1288,103 @@ function drawMountains(
             10,
             25
         );
-
     });
 }
 
 
 // ============================================================
-// DRAW OBSTACLES
+// OBSTACLES
 // ============================================================
 
 function drawObstacles() {
 
-    obstacles.forEach(obstacle => {
+    obstacles.forEach(
+        obstacle => {
 
-        // Shadow
+            // Shadow
 
-        ctx.fillStyle =
-            "rgba(0,0,0,0.45)";
+            ctx.fillStyle =
+                "rgba(0,0,0,0.45)";
 
-        ctx.fillRect(
-            obstacle.x + 6,
-            obstacle.y +
-                obstacle.height,
-            obstacle.width,
-            7
-        );
-
-
-        // Body
-
-        const gradient =
-            ctx.createLinearGradient(
-                obstacle.x,
-                obstacle.y,
-                obstacle.x,
+            ctx.fillRect(
+                obstacle.x + 6,
                 obstacle.y +
-                    obstacle.height
+                    obstacle.height,
+                obstacle.width,
+                7
             );
 
-        gradient.addColorStop(
-            0,
-            "#514563"
-        );
 
-        gradient.addColorStop(
-            0.5,
-            "#30273f"
-        );
+            // Body
 
-        gradient.addColorStop(
-            1,
-            "#15131d"
-        );
+            const gradient =
+                ctx.createLinearGradient(
+                    obstacle.x,
+                    obstacle.y,
+                    obstacle.x,
+                    obstacle.y +
+                        obstacle.height
+                );
 
-        ctx.fillStyle =
-            gradient;
+            gradient.addColorStop(
+                0,
+                "#514563"
+            );
 
-        ctx.fillRect(
-            obstacle.x,
-            obstacle.y,
-            obstacle.width,
-            obstacle.height
-        );
+            gradient.addColorStop(
+                0.5,
+                "#30273f"
+            );
 
+            gradient.addColorStop(
+                1,
+                "#15131d"
+            );
 
-        // Border
+            ctx.fillStyle =
+                gradient;
 
-        ctx.strokeStyle =
-            "rgba(195,165,235,0.65)";
-
-        ctx.lineWidth = 1;
-
-        ctx.strokeRect(
-            obstacle.x,
-            obstacle.y,
-            obstacle.width,
-            obstacle.height
-        );
+            ctx.fillRect(
+                obstacle.x,
+                obstacle.y,
+                obstacle.width,
+                obstacle.height
+            );
 
 
-        // Highlight
+            // Border
 
-        ctx.fillStyle =
-            "rgba(220,200,255,0.18)";
+            ctx.strokeStyle =
+                "rgba(195,165,235,0.65)";
 
-        ctx.fillRect(
-            obstacle.x + 4,
-            obstacle.y + 4,
-            obstacle.width - 8,
-            3
-        );
+            ctx.lineWidth = 1;
 
-    });
+            ctx.strokeRect(
+                obstacle.x,
+                obstacle.y,
+                obstacle.width,
+                obstacle.height
+            );
+
+
+            // Highlight
+
+            ctx.fillStyle =
+                "rgba(220,200,255,0.18)";
+
+            ctx.fillRect(
+                obstacle.x + 4,
+                obstacle.y + 4,
+                obstacle.width - 8,
+                3
+            );
+        }
+    );
 }
 
 
 // ============================================================
-// DRAW PLAYER
+// PLAYER
 // ============================================================
 
 function drawPlayer() {
@@ -1315,7 +1423,7 @@ function drawPlayer() {
 
 
     // IMPORTANT:
-    // Use player.y so the sprite actually jumps.
+    // player.y changes during jumping.
 
     const drawY =
         player.y;
@@ -1346,9 +1454,6 @@ function drawFallbackPlayer() {
 
     const x =
         player.x;
-
-    // IMPORTANT:
-    // The fallback character also follows player.y.
 
     const y =
         player.y;
@@ -1504,9 +1609,7 @@ function gameOver() {
     gameRunning = false;
 
 
-    if (
-        gameAnimationId !== null
-    ) {
+    if (gameAnimationId !== null) {
 
         cancelAnimationFrame(
             gameAnimationId
@@ -1537,9 +1640,7 @@ function finishGame() {
     gameRunning = false;
 
 
-    if (
-        gameAnimationId !== null
-    ) {
+    if (gameAnimationId !== null) {
 
         cancelAnimationFrame(
             gameAnimationId
