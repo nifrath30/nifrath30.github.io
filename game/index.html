@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Anime Runner</title>
+    <link rel="stylesheet" href="game.css">
+</head>
+
+<body>
+
+    <div id="game">
+
+        <!-- INTRO -->
+        <section id="introScreen" class="screen active">
+            <div class="intro-glow"></div>
+
+            <div class="intro-content">
+                <p class="small-text">A NEW JOURNEY BEGINS</p>
+
+                <h1>UNKNOWN</h1>
+
+                <p class="intro-description">
+                    Every journey begins with a single step.
+                </p>
+
+                <button id="startIntroButton">BEGIN</button>
+            </div>
+        </section>
+
+
+        <!-- NAME SCREEN -->
+        <section id="nameScreen" class="screen">
+
+            <div class="panel">
+                <p class="small-text">IDENTITY</p>
+
+                <h2>ENTER YOUR NAME</h2>
+
+                <input
+                    type="text"
+                    id="playerName"
+                    maxlength="16"
+                    placeholder="Your name..."
+                    autocomplete="off"
+                >
+
+                <button id="nameButton">CONTINUE</button>
+
+                <p id="nameError"></p>
+            </div>
+
+        </section>
+
+
+        <!-- LOBBY -->
+        <section id="lobbyScreen" class="screen">
+
+            <div class="lobby-background"></div>
+
+            <div class="lobby-content">
+
+                <p class="small-text">WELCOME</p>
+
+                <h1 id="welcomeText">WELCOME</h1>
+
+                <div class="character-placeholder">
+                    <div class="character-glow"></div>
+                    <div class="character">
+                        <span>✦</span>
+                    </div>
+                </div>
+
+                <button id="playButton">PLAY</button>
+
+            </div>
+
+        </section>
+
+
+        <!-- GAME -->
+        <section id="gameScreen" class="screen">
+
+            <canvas id="gameCanvas"></canvas>
+
+            <div id="gameUI">
+
+                <div class="game-top">
+
+                    <div class="player-display">
+                        <span id="gamePlayerName"></span>
+                    </div>
+
+                    <div class="timer">
+                        <span id="timer">30</span>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- END -->
+        <section id="endScreen" class="screen">
+
+            <div class="end-content">
+
+                <p class="small-text">JOURNEY COMPLETE</p>
+
+                <h1>END</h1>
+
+                <p id="endMessage"></p>
+
+            </div>
+
+        </section>
+
+
+        <!-- SURPRISE -->
+        <section id="surpriseScreen" class="screen">
+
+            <img
+                id="surpriseImage"
+                src="assets/surprise.png"
+                alt="Surprise"
+            >
+
+        </section>
+
+    </div>
+
+    <script src="game.js"></script>
+
+</body>
+</html>

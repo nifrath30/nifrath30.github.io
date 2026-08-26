@@ -1,0 +1,546 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Orbitron:wght@400;500;600;700;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #050509;
+}
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    color: white;
+    touch-action: manipulation;
+}
+
+#game {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #050509;
+}
+
+.screen {
+    position: absolute;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 0.7s ease,
+        visibility 0.7s ease;
+
+    overflow: hidden;
+}
+
+.screen.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+
+/* =========================
+   INTRO
+========================= */
+
+#introScreen {
+    background:
+        radial-gradient(circle at center,
+            rgba(90, 70, 150, 0.25),
+            transparent 45%),
+        linear-gradient(
+            135deg,
+            #070711,
+            #111025,
+            #050509
+        );
+}
+
+.intro-glow {
+    position: absolute;
+
+    width: 50vw;
+    height: 50vw;
+
+    max-width: 600px;
+    max-height: 600px;
+
+    border-radius: 50%;
+
+    background: rgba(120, 90, 255, 0.12);
+
+    filter: blur(80px);
+
+    animation: breathe 4s infinite alternate;
+}
+
+.intro-content {
+    position: relative;
+    text-align: center;
+
+    animation: introAppear 1.5s ease;
+}
+
+.small-text {
+    font-size: 11px;
+    letter-spacing: 6px;
+    opacity: 0.55;
+    margin-bottom: 18px;
+}
+
+.intro-content h1 {
+    font-family: 'Cinzel', serif;
+
+    font-size: clamp(45px, 9vw, 110px);
+
+    letter-spacing: 12px;
+
+    text-shadow:
+        0 0 20px rgba(150, 120, 255, 0.7),
+        0 0 50px rgba(100, 80, 255, 0.3);
+}
+
+.intro-description {
+    margin-top: 10px;
+
+    font-size: 12px;
+    opacity: 0.65;
+    letter-spacing: 2px;
+}
+
+button {
+    margin-top: 35px;
+
+    padding: 15px 45px;
+
+    border: 1px solid rgba(255, 255, 255, 0.5);
+
+    background: rgba(255, 255, 255, 0.05);
+
+    color: white;
+
+    font-family: 'Orbitron', sans-serif;
+
+    letter-spacing: 4px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        background 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+button:hover {
+    transform: translateY(-3px);
+
+    background: rgba(255, 255, 255, 0.15);
+
+    box-shadow:
+        0 0 30px rgba(150, 120, 255, 0.4);
+}
+
+button:active {
+    transform: scale(0.96);
+}
+
+
+/* =========================
+   NAME SCREEN
+========================= */
+
+#nameScreen {
+    background:
+        radial-gradient(
+            circle at center,
+            #17132c,
+            #050509 70%
+        );
+}
+
+.panel {
+    width: min(90%, 500px);
+
+    padding: 50px 35px;
+
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.035);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+
+    backdrop-filter: blur(15px);
+
+    box-shadow:
+        0 20px 80px rgba(0, 0, 0, 0.5);
+}
+
+.panel h2 {
+    font-family: 'Cinzel', serif;
+
+    font-size: clamp(25px, 5vw, 42px);
+
+    letter-spacing: 4px;
+
+    margin-bottom: 30px;
+}
+
+#playerName {
+    width: 100%;
+
+    padding: 15px;
+
+    background: rgba(0, 0, 0, 0.4);
+
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+
+    outline: none;
+
+    color: white;
+
+    text-align: center;
+
+    font-family: 'Orbitron', sans-serif;
+
+    font-size: 16px;
+}
+
+#playerName::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+#nameError {
+    margin-top: 15px;
+
+    font-size: 11px;
+
+    color: #ff8c8c;
+}
+
+
+/* =========================
+   LOBBY
+========================= */
+
+#lobbyScreen {
+    background:
+        linear-gradient(
+            to bottom,
+            #111329,
+            #080811 60%,
+            #030305
+        );
+}
+
+.lobby-background {
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at 50% 25%,
+            rgba(110, 90, 255, 0.2),
+            transparent 35%
+        );
+
+    animation: breathe 5s infinite alternate;
+}
+
+.lobby-content {
+    position: relative;
+
+    text-align: center;
+
+    width: 100%;
+}
+
+.lobby-content h1 {
+    font-family: 'Cinzel', serif;
+
+    font-size: clamp(30px, 7vw, 70px);
+
+    letter-spacing: 5px;
+}
+
+
+/* Temporary character */
+
+.character-placeholder {
+    position: relative;
+
+    width: 170px;
+    height: 220px;
+
+    margin: 25px auto;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.character-glow {
+    position: absolute;
+
+    width: 160px;
+    height: 160px;
+
+    border-radius: 50%;
+
+    background: rgba(130, 100, 255, 0.25);
+
+    filter: blur(30px);
+}
+
+.character {
+    position: relative;
+
+    width: 80px;
+    height: 150px;
+
+    border-radius: 45% 45% 20% 20%;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #24213d,
+            #11111c
+        );
+
+    box-shadow:
+        0 0 30px rgba(130, 110, 255, 0.35);
+
+    animation: characterIdle 2s infinite ease-in-out;
+}
+
+.character span {
+    position: absolute;
+
+    top: -25px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    font-size: 30px;
+
+    animation: starFloat 2s infinite ease-in-out;
+}
+
+
+/* =========================
+   GAME
+========================= */
+
+#gameScreen {
+    background: #101421;
+}
+
+#gameCanvas {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+}
+
+#gameUI {
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+}
+
+.game-top {
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 20px;
+
+    font-size: 12px;
+
+    letter-spacing: 2px;
+}
+
+.player-display,
+.timer {
+    padding: 10px 15px;
+
+    background: rgba(0, 0, 0, 0.35);
+
+    backdrop-filter: blur(10px);
+
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+
+/* =========================
+   END
+========================= */
+
+#endScreen {
+    background:
+        radial-gradient(
+            circle at center,
+            #151225,
+            #030305
+        );
+}
+
+.end-content {
+    text-align: center;
+
+    animation: endAppear 1s ease;
+}
+
+.end-content h1 {
+    font-family: 'Cinzel', serif;
+
+    font-size: clamp(60px, 13vw, 150px);
+
+    letter-spacing: 20px;
+
+    text-shadow:
+        0 0 30px rgba(150, 120, 255, 0.6);
+}
+
+#endMessage {
+    margin-top: 20px;
+
+    opacity: 0.5;
+
+    font-size: 11px;
+
+    letter-spacing: 3px;
+}
+
+
+/* =========================
+   SURPRISE
+========================= */
+
+#surpriseScreen {
+    background: black;
+
+    z-index: 100;
+}
+
+#surpriseImage {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    display: block;
+}
+
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+@keyframes breathe {
+
+    from {
+        transform: scale(0.9);
+        opacity: 0.5;
+    }
+
+    to {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+}
+
+@keyframes introAppear {
+
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes characterIdle {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes starFloat {
+
+    0%,
+    100% {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        transform: translateX(-50%) translateY(-8px);
+    }
+}
+
+@keyframes endAppear {
+
+    from {
+        opacity: 0;
+        transform: scale(1.2);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .small-text {
+        font-size: 8px;
+        letter-spacing: 4px;
+    }
+
+    button {
+        padding: 14px 35px;
+    }
+
+    .panel {
+        padding: 40px 25px;
+    }
+
+    .game-top {
+        padding: 12px;
+    }
+
+}
