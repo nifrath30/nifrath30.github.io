@@ -1,11 +1,11 @@
 // ============================================================
 // ANIME RUNNER
-// PC + MOBILE VERSION
+// FULL PC + PHONE VERSION
 // ============================================================
 
 
 // ============================================================
-// SCREENS
+// HTML ELEMENTS
 // ============================================================
 
 const introScreen = document.getElementById("introScreen");
@@ -52,12 +52,15 @@ const ctx =
     canvas.getContext("2d");
 
 
-// Keep sprites sharp
+// ============================================================
+// CANVAS SETTINGS
+// ============================================================
+
 ctx.imageSmoothingEnabled = false;
 
 
 // ============================================================
-// SCREEN MANAGEMENT
+// SCREEN SYSTEM
 // ============================================================
 
 function showScreen(screen) {
@@ -71,8 +74,8 @@ function showScreen(screen) {
         surpriseScreen
     ];
 
-    screens.forEach(item => {
-        item.classList.remove("active");
+    screens.forEach(screenItem => {
+        screenItem.classList.remove("active");
     });
 
     screen.classList.add("active");
@@ -155,7 +158,7 @@ retryButton.addEventListener(
 
 
 // ============================================================
-// CANVAS
+// CANVAS RESIZE
 // ============================================================
 
 function resizeCanvas() {
@@ -216,17 +219,14 @@ playerSprite.onload = () => {
     spriteLoaded = true;
 
     console.log(
-        "Character sprite loaded:",
-        playerSprite.naturalWidth,
-        "x",
-        playerSprite.naturalHeight
+        "Character sprite loaded."
     );
 };
 
 playerSprite.onerror = () => {
 
     console.error(
-        "ERROR: assets/character-run.png could not be loaded."
+        "Could not load assets/character-run.png"
     );
 };
 
@@ -254,7 +254,7 @@ let groundY = 0;
 
 const player = {
 
-    x: 120,
+    x: 110,
 
     y: 0,
 
@@ -264,9 +264,17 @@ const player = {
 
     velocityY: 0,
 
-    gravity: 2200,
+    /*
+       Strong enough to clearly jump
+       over the obstacles on phone.
+    */
+    jumpPower: -1000,
 
-    jumpPower: -850,
+    /*
+       Gravity controls how quickly
+       the character comes back down.
+    */
+    gravity: 2200,
 
     grounded: true,
 
@@ -284,12 +292,19 @@ const player = {
 
 const FRAME_COUNT = 8;
 
-// Adjust these ONLY if your sprite sheet has
-// a different vertical layout.
 
-const SPRITE_SOURCE_Y = 420;
+/*
+   These values assume your character-run.png
+   contains the 8-frame running sheet.
 
-const SPRITE_SOURCE_HEIGHT = 380;
+   If your sheet is a single horizontal row,
+   the code automatically uses the whole image
+   height instead.
+*/
+
+let spriteSourceY = 0;
+
+let spriteSourceHeight = 0;
 
 
 // ============================================================
@@ -302,7 +317,7 @@ let obstacleTimer = 0;
 
 let obstacleInterval = 1.8;
 
-let gameSpeed = 420;
+const gameSpeed = 420;
 
 
 // ============================================================
@@ -320,6 +335,7 @@ function startGame() {
         gameAnimationId = null;
     }
 
+
     gameRunning = true;
 
     elapsedTime = 0;
@@ -332,7 +348,6 @@ function startGame() {
         1.7 +
         Math.random() * 0.7;
 
-    gameSpeed = 420;
 
     player.frame = 0;
 
@@ -342,21 +357,28 @@ function startGame() {
 
     player.grounded = true;
 
+
     resizeCanvas();
+
 
     groundY =
         window.innerHeight - 105;
 
+
     player.y =
         groundY - player.height;
+
 
     gamePlayerName.textContent =
         playerName;
 
+
     timerElement.textContent =
         "30";
 
+
     showScreen(gameScreen);
+
 
     lastTime =
         performance.now();
@@ -364,8 +386,11 @@ function startGame() {
     gameStartTime =
         performance.now();
 
+
     gameAnimationId =
-        requestAnimationFrame(gameLoop);
+        requestAnimationFrame(
+            gameLoop
+        );
 }
 
 
@@ -379,22 +404,25 @@ function gameLoop(currentTime) {
         return;
     }
 
+
     const deltaTime =
         Math.min(
             (currentTime - lastTime) / 1000,
             0.033
         );
 
+
     lastTime =
         currentTime;
+
 
     elapsedTime =
         (currentTime - gameStartTime) / 1000;
 
 
-    // ========================================================
+    // --------------------------------------------------------
     // TIMER
-    // ========================================================
+    // --------------------------------------------------------
 
     const remaining =
         Math.max(
@@ -402,13 +430,14 @@ function gameLoop(currentTime) {
             Math.ceil(30 - elapsedTime)
         );
 
+
     timerElement.textContent =
         remaining;
 
 
-    // ========================================================
-    // SUCCESS
-    // ========================================================
+    // --------------------------------------------------------
+    // WIN
+    // --------------------------------------------------------
 
     if (elapsedTime >= 30) {
 
@@ -418,9 +447,9 @@ function gameLoop(currentTime) {
     }
 
 
-    // ========================================================
+    // --------------------------------------------------------
     // UPDATE
-    // ========================================================
+    // --------------------------------------------------------
 
     updatePlayer(deltaTime);
 
@@ -431,11 +460,12 @@ function gameLoop(currentTime) {
     checkCollisions();
 
 
-    // ========================================================
+    // --------------------------------------------------------
     // DRAW
-    // ========================================================
+    // --------------------------------------------------------
 
     drawGame();
+
 
     gameAnimationId =
         requestAnimationFrame(
@@ -453,23 +483,28 @@ function updatePlayer(deltaTime) {
     groundY =
         window.innerHeight - 105;
 
+
     player.velocityY +=
         player.gravity *
         deltaTime;
+
 
     player.y +=
         player.velocityY *
         deltaTime;
 
 
-    // Ground
-    if (
-        player.y >=
-        groundY - player.height
-    ) {
+    // --------------------------------------------------------
+    // LANDING
+    // --------------------------------------------------------
 
-        player.y =
-            groundY - player.height;
+    const floorY =
+        groundY - player.height;
+
+
+    if (player.y >= floorY) {
+
+        player.y = floorY;
 
         player.velocityY = 0;
 
@@ -492,20 +527,31 @@ function jump() {
         return;
     }
 
-    // Prevent double jump
+
+    /*
+       No double jump.
+
+       The character must touch the ground
+       before another jump is allowed.
+    */
+
     if (!player.grounded) {
         return;
     }
+
 
     player.velocityY =
         player.jumpPower;
 
     player.grounded = false;
+
+
+    console.log("JUMP");
 }
 
 
 // ============================================================
-// PC KEYBOARD CONTROLS
+// PC KEYBOARD
 // ============================================================
 
 window.addEventListener(
@@ -518,6 +564,7 @@ window.addEventListener(
         ) {
             return;
         }
+
 
         if (
             event.code === "Space" ||
@@ -533,20 +580,40 @@ window.addEventListener(
 
 
 // ============================================================
-// PHONE TOUCH CONTROL
+// PHONE + MOUSE
+// ANYWHERE ON THE GAME SCREEN
 // ============================================================
 
-// This is the important mobile control.
+/*
+   IMPORTANT:
 
-gameScreen.addEventListener(
-    "touchstart",
+   We listen on DOCUMENT rather than only the canvas.
+
+   Therefore, when the game is active:
+
+       TAP ANYWHERE ON PHONE SCREEN
+                     ↓
+                   JUMP
+
+   This avoids problems caused by the canvas,
+   game UI, or other layers covering the screen.
+*/
+
+document.addEventListener(
+    "pointerdown",
     event => {
 
         if (!gameRunning) {
             return;
         }
 
+
+        /*
+           Prevent browser gestures while playing.
+        */
+
         event.preventDefault();
+
 
         jump();
 
@@ -558,23 +625,20 @@ gameScreen.addEventListener(
 
 
 // ============================================================
-// PHONE + PC POINTER CONTROL
+// EXTRA MOBILE TOUCH FALLBACK
 // ============================================================
 
-// This also allows tapping/clicking the game.
-
-gameScreen.addEventListener(
-    "pointerdown",
+document.addEventListener(
+    "touchstart",
     event => {
 
         if (!gameRunning) {
             return;
         }
 
-        // Touch/stylus is handled here.
-        // Mouse is also supported.
 
         event.preventDefault();
+
 
         jump();
 
@@ -595,8 +659,10 @@ function updateSprite(deltaTime) {
         return;
     }
 
+
     player.frameTimer +=
         deltaTime;
+
 
     if (
         player.frameTimer >=
@@ -628,14 +694,16 @@ function createObstacle() {
         45 +
         Math.random() * 20;
 
+
     const height =
         50 +
         Math.random() * 30;
 
+
     obstacles.push({
 
         x:
-            window.innerWidth + 30,
+            window.innerWidth + 40,
 
         y:
             groundY - height,
@@ -658,6 +726,7 @@ function updateObstacles(deltaTime) {
     obstacleTimer +=
         deltaTime;
 
+
     if (
         obstacleTimer >=
         obstacleInterval
@@ -665,7 +734,9 @@ function updateObstacles(deltaTime) {
 
         obstacleTimer = 0;
 
+
         createObstacle();
+
 
         obstacleInterval =
             1.7 +
@@ -679,7 +750,6 @@ function updateObstacles(deltaTime) {
             obstacle.x -=
                 gameSpeed *
                 deltaTime;
-
         }
     );
 
@@ -699,28 +769,31 @@ function updateObstacles(deltaTime) {
 
 
 // ============================================================
-// COLLISION
+// COLLISION DETECTION
 // ============================================================
 
 function checkCollisions() {
 
-    // Smaller hitbox so transparent
-    // sprite space doesn't cause
-    // unwanted collisions.
+    /*
+       Smaller player hitbox.
+
+       This prevents transparent parts
+       of the PNG from causing false collisions.
+    */
 
     const playerBox = {
 
         x:
-            player.x + 25,
+            player.x + 28,
 
         y:
-            player.y + 25,
+            player.y + 20,
 
         width:
-            player.width - 50,
+            player.width - 56,
 
         height:
-            player.height - 30
+            player.height - 25
     };
 
 
@@ -781,7 +854,7 @@ function checkCollisions() {
 
 
 // ============================================================
-// DRAW GAME
+// DRAW EVERYTHING
 // ============================================================
 
 function drawGame() {
@@ -805,6 +878,7 @@ function drawGame() {
             height
         );
 
+
     sky.addColorStop(
         0,
         "#09051a"
@@ -816,7 +890,7 @@ function drawGame() {
     );
 
     sky.addColorStop(
-        0.7,
+        0.70,
         "#101a2c"
     );
 
@@ -825,8 +899,10 @@ function drawGame() {
         "#05070d"
     );
 
+
     ctx.fillStyle =
         sky;
+
 
     ctx.fillRect(
         0,
@@ -850,6 +926,7 @@ function drawGame() {
             500
         );
 
+
     purpleGlow.addColorStop(
         0,
         "rgba(105,65,180,0.20)"
@@ -865,8 +942,10 @@ function drawGame() {
         "rgba(0,0,0,0)"
     );
 
+
     ctx.fillStyle =
         purpleGlow;
+
 
     ctx.fillRect(
         0,
@@ -899,6 +978,7 @@ function drawGame() {
             160
         );
 
+
     moonGlow.addColorStop(
         0,
         "rgba(210,210,255,0.22)"
@@ -909,8 +989,10 @@ function drawGame() {
         "rgba(150,150,255,0)"
     );
 
+
     ctx.fillStyle =
         moonGlow;
+
 
     ctx.beginPath();
 
@@ -927,6 +1009,7 @@ function drawGame() {
 
     ctx.fillStyle =
         "#d9dcff";
+
 
     ctx.beginPath();
 
@@ -946,6 +1029,7 @@ function drawGame() {
     ctx.fillStyle =
         "rgba(120,125,170,0.15)";
 
+
     ctx.beginPath();
 
     ctx.arc(
@@ -957,6 +1041,7 @@ function drawGame() {
     );
 
     ctx.fill();
+
 
     ctx.beginPath();
 
@@ -998,8 +1083,10 @@ function drawGame() {
     groundY =
         height - 105;
 
+
     ctx.fillStyle =
         "#060911";
+
 
     ctx.fillRect(
         0,
@@ -1012,6 +1099,7 @@ function drawGame() {
     ctx.fillStyle =
         "rgba(130,110,210,0.25)";
 
+
     ctx.fillRect(
         0,
         groundY,
@@ -1021,15 +1109,17 @@ function drawGame() {
 
 
     // ========================================================
-    // ROAD
+    // ROAD LINES
     // ========================================================
 
     ctx.fillStyle =
         "rgba(150,140,190,0.12)";
 
+
     const roadLineWidth = 65;
 
     const roadGap = 75;
+
 
     const roadOffset =
         (elapsedTime * gameSpeed) %
@@ -1128,6 +1218,7 @@ function drawMountains(
     ctx.fillStyle =
         "#151936";
 
+
     ctx.beginPath();
 
     ctx.moveTo(
@@ -1184,6 +1275,7 @@ function drawMountains(
 
     ctx.fillStyle =
         "#0b1120";
+
 
     ctx.beginPath();
 
@@ -1260,6 +1352,7 @@ function drawMountains(
         const base =
             groundY;
 
+
         ctx.beginPath();
 
         ctx.moveTo(
@@ -1293,7 +1386,7 @@ function drawMountains(
 
 
 // ============================================================
-// OBSTACLES
+// DRAW OBSTACLES
 // ============================================================
 
 function drawObstacles() {
@@ -1305,6 +1398,7 @@ function drawObstacles() {
 
             ctx.fillStyle =
                 "rgba(0,0,0,0.45)";
+
 
             ctx.fillRect(
                 obstacle.x + 6,
@@ -1326,6 +1420,7 @@ function drawObstacles() {
                         obstacle.height
                 );
 
+
             gradient.addColorStop(
                 0,
                 "#514563"
@@ -1341,8 +1436,10 @@ function drawObstacles() {
                 "#15131d"
             );
 
+
             ctx.fillStyle =
                 gradient;
+
 
             ctx.fillRect(
                 obstacle.x,
@@ -1357,7 +1454,9 @@ function drawObstacles() {
             ctx.strokeStyle =
                 "rgba(195,165,235,0.65)";
 
+
             ctx.lineWidth = 1;
+
 
             ctx.strokeRect(
                 obstacle.x,
@@ -1367,10 +1466,11 @@ function drawObstacles() {
             );
 
 
-            // Highlight
+            // Top highlight
 
             ctx.fillStyle =
                 "rgba(220,200,255,0.18)";
+
 
             ctx.fillRect(
                 obstacle.x + 4,
@@ -1384,7 +1484,7 @@ function drawObstacles() {
 
 
 // ============================================================
-// PLAYER
+// DRAW PLAYER
 // ============================================================
 
 function drawPlayer() {
@@ -1401,32 +1501,22 @@ function drawPlayer() {
         playerSprite.naturalWidth /
         FRAME_COUNT;
 
+
+    /*
+       The entire image height is used.
+
+       This avoids cutting off the character's
+       head or body if your PNG is a normal
+       horizontal 8-frame sprite sheet.
+    */
+
+    const sourceHeight =
+        playerSprite.naturalHeight;
+
+
     const sourceX =
         player.frame *
         frameWidth;
-
-    const sourceY =
-        SPRITE_SOURCE_Y;
-
-    const sourceWidth =
-        frameWidth;
-
-    const sourceHeight =
-        SPRITE_SOURCE_HEIGHT;
-
-
-    const drawWidth =
-        player.width;
-
-    const drawHeight =
-        player.height;
-
-
-    // IMPORTANT:
-    // player.y changes during jumping.
-
-    const drawY =
-        player.y;
 
 
     ctx.drawImage(
@@ -1434,14 +1524,16 @@ function drawPlayer() {
         playerSprite,
 
         sourceX,
-        sourceY,
-        sourceWidth,
+        0,
+
+        frameWidth,
         sourceHeight,
 
         player.x,
-        drawY,
-        drawWidth,
-        drawHeight
+        player.y,
+
+        player.width,
+        player.height
     );
 }
 
@@ -1471,6 +1563,7 @@ function drawFallbackPlayer() {
             80
         );
 
+
     glow.addColorStop(
         0,
         "rgba(150,100,255,0.35)"
@@ -1481,8 +1574,10 @@ function drawFallbackPlayer() {
         "rgba(150,100,255,0)"
     );
 
+
     ctx.fillStyle =
         glow;
+
 
     ctx.beginPath();
 
@@ -1502,6 +1597,7 @@ function drawFallbackPlayer() {
     ctx.fillStyle =
         "#493477";
 
+
     ctx.fillRect(
         x + 27,
         y + 58,
@@ -1514,6 +1610,7 @@ function drawFallbackPlayer() {
 
     ctx.fillStyle =
         "#d7ad8b";
+
 
     ctx.beginPath();
 
@@ -1532,6 +1629,7 @@ function drawFallbackPlayer() {
 
     ctx.fillStyle =
         "#11101d";
+
 
     ctx.beginPath();
 
@@ -1580,12 +1678,14 @@ function drawFallbackPlayer() {
     ctx.fillStyle =
         "#171426";
 
+
     ctx.fillRect(
         x + 30,
         y + 120,
         17,
         30
     );
+
 
     ctx.fillRect(
         x + 58,
@@ -1605,6 +1705,7 @@ function gameOver() {
     if (!gameRunning) {
         return;
     }
+
 
     gameRunning = false;
 
@@ -1628,7 +1729,7 @@ function gameOver() {
 
 
 // ============================================================
-// SUCCESS
+// WIN
 // ============================================================
 
 function finishGame() {
@@ -1636,6 +1737,7 @@ function finishGame() {
     if (!gameRunning) {
         return;
     }
+
 
     gameRunning = false;
 
