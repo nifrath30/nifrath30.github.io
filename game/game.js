@@ -1,48 +1,126 @@
 // ============================================================
-// ANIME RUNNER - FIXED VERSION
+// ANIME RUNNER - SUPABASE VERSION
 // ============================================================
 
-// -------------------------
+// ============================================================
+// SUPABASE
+// ============================================================
+
+let supabaseClient = null;
+
+if (
+    typeof window.SUPABASE_URL === "string" &&
+    typeof window.SUPABASE_KEY === "string" &&
+    window.SUPABASE_URL &&
+    window.SUPABASE_KEY &&
+    typeof window.supabase !== "undefined"
+) {
+    try {
+
+        supabaseClient =
+            window.supabase.createClient(
+                window.SUPABASE_URL,
+                window.SUPABASE_KEY
+            );
+
+    } catch (error) {
+
+        console.error(
+            "Supabase initialization failed:",
+            error
+        );
+    }
+} else {
+
+    console.error(
+        "Supabase configuration is missing."
+    );
+}
+
+
+// ============================================================
 // ELEMENTS
-// -------------------------
+// ============================================================
 
-const introScreen = document.getElementById("introScreen");
-const nameScreen = document.getElementById("nameScreen");
-const lobbyScreen = document.getElementById("lobbyScreen");
-const gameScreen = document.getElementById("gameScreen");
-const surpriseScreen = document.getElementById("surpriseScreen");
+const introScreen =
+    document.getElementById("introScreen");
 
-const startIntroButton = document.getElementById("startIntroButton");
-const nameButton = document.getElementById("nameButton");
-const playButton = document.getElementById("playButton");
-const retryButton = document.getElementById("retryButton");
+const nameScreen =
+    document.getElementById("nameScreen");
 
-const playerNameInput = document.getElementById("playerName");
-const nameError = document.getElementById("nameError");
+const lobbyScreen =
+    document.getElementById("lobbyScreen");
 
-const welcomeText = document.getElementById("welcomeText");
-const welcomeLabel = document.getElementById("welcomeLabel");
-const savedHighScore = document.getElementById("savedHighScore");
+const gameScreen =
+    document.getElementById("gameScreen");
 
-const gamePlayerName = document.getElementById("gamePlayerName");
-const scoreElement = document.getElementById("score");
+const surpriseScreen =
+    document.getElementById("surpriseScreen");
 
-const resultPanel = document.getElementById("resultPanel");
-const resultScore = document.getElementById("resultScore");
-const resultHighScore = document.getElementById("resultHighScore");
 
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const startIntroButton =
+    document.getElementById("startIntroButton");
+
+const nameButton =
+    document.getElementById("nameButton");
+
+const playButton =
+    document.getElementById("playButton");
+
+const retryButton =
+    document.getElementById("retryButton");
+
+
+const playerNameInput =
+    document.getElementById("playerName");
+
+const nameError =
+    document.getElementById("nameError");
+
+
+const welcomeText =
+    document.getElementById("welcomeText");
+
+const welcomeLabel =
+    document.getElementById("welcomeLabel");
+
+const savedHighScore =
+    document.getElementById("savedHighScore");
+
+
+const gamePlayerName =
+    document.getElementById("gamePlayerName");
+
+const scoreElement =
+    document.getElementById("score");
+
+
+const resultPanel =
+    document.getElementById("resultPanel");
+
+const resultScore =
+    document.getElementById("resultScore");
+
+const resultHighScore =
+    document.getElementById("resultHighScore");
+
+
+const canvas =
+    document.getElementById("gameCanvas");
+
+const ctx =
+    canvas.getContext("2d");
 
 
 // ============================================================
 // PLAYER DATA
 // ============================================================
 
-const PLAYER_STORAGE_KEY = "animeRunnerPlayer";
-
 let playerName = "";
+
 let highScore = 0;
+
+let playerId = null;
 
 
 // ============================================================
@@ -51,97 +129,250 @@ let highScore = 0;
 
 function showScreen(screen) {
 
-    document.querySelectorAll(".screen").forEach(element => {
-        element.classList.remove("active");
-    });
+    document.querySelectorAll(".screen").forEach(
+        function (element) {
 
-    screen.classList.add("active");
+            element.classList.remove("active");
+
+        }
+    );
+
+    if (screen) {
+
+        screen.classList.add("active");
+    }
 }
 
 
 // ============================================================
-// LOAD PLAYER
+// DATABASE - FIND PLAYER
 // ============================================================
 
-function loadPlayer() {
+async function getPlayerFromDatabase(name) {
+
+    if (!supabaseClient) {
+
+        return null;
+    }
 
     try {
 
-        const data = localStorage.getItem(PLAYER_STORAGE_KEY);
+        const { data, error } =
+            await supabaseClient
+                .from("players")
+                .select("id, name, high_score")
+                .eq("name", name)
+                .limit(1)
+                .maybeSingle();
 
-        if (!data) {
+
+        if (error) {
+
+            console.error(
+                "Error finding player:",
+                error
+            );
+
+            return null;
+        }
+
+
+        return data || null;
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected database error:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+// ============================================================
+// DATABASE - CREATE PLAYER
+// ============================================================
+
+async function createPlayerInDatabase(name) {
+
+    if (!supabaseClient) {
+
+        return null;
+    }
+
+    try {
+
+        const { data, error } =
+            await supabaseClient
+                .from("players")
+                .insert({
+
+                    name: name,
+
+                    high_score: 0
+
+                })
+                .select("id, name, high_score")
+                .single();
+
+
+        if (error) {
+
+            console.error(
+                "Error creating player:",
+                error
+            );
+
+            return null;
+        }
+
+
+        return data || null;
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected database error:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+// ============================================================
+// DATABASE - LOAD OR CREATE PLAYER
+// ============================================================
+
+async function loadOrCreatePlayer(name) {
+
+    if (!supabaseClient) {
+
+        nameError.textContent =
+            "DATABASE CONNECTION FAILED";
+
+        return false;
+    }
+
+
+    nameError.textContent =
+        "CONNECTING...";
+
+
+    /*
+     * First check whether this name already exists.
+     */
+
+    const existingPlayer =
+        await getPlayerFromDatabase(name);
+
+
+    if (existingPlayer) {
+
+        playerId =
+            existingPlayer.id;
+
+        playerName =
+            existingPlayer.name;
+
+        highScore =
+            Number(existingPlayer.high_score) || 0;
+
+        nameError.textContent =
+            "";
+
+        return true;
+    }
+
+
+    /*
+     * Player does not exist,
+     * so create a new record.
+     */
+
+    const newPlayer =
+        await createPlayerInDatabase(name);
+
+
+    if (!newPlayer) {
+
+        nameError.textContent =
+            "COULD NOT SAVE PLAYER. PLEASE TRY AGAIN.";
+
+        return false;
+    }
+
+
+    playerId =
+        newPlayer.id;
+
+    playerName =
+        newPlayer.name;
+
+    highScore =
+        Number(newPlayer.high_score) || 0;
+
+
+    nameError.textContent =
+        "";
+
+    return true;
+}
+
+
+// ============================================================
+// DATABASE - UPDATE HIGH SCORE
+// ============================================================
+
+async function updateHighScoreInDatabase(newScore) {
+
+    if (
+        !supabaseClient ||
+        !playerId
+    ) {
+
+        return false;
+    }
+
+
+    try {
+
+        const { error } =
+            await supabaseClient
+                .from("players")
+                .update({
+
+                    high_score: newScore
+
+                })
+                .eq("id", playerId);
+
+
+        if (error) {
+
+            console.error(
+                "Error updating high score:",
+                error
+            );
+
             return false;
         }
 
-        const player = JSON.parse(data);
-
-        if (!player || !player.name) {
-            return false;
-        }
-
-        playerName = player.name;
-        highScore = Number(player.highScore) || 0;
 
         return true;
 
     } catch (error) {
 
-        console.error("Error loading player:", error);
+        console.error(
+            "Unexpected high-score error:",
+            error
+        );
 
         return false;
     }
-}
-
-
-// ============================================================
-// SAVE PLAYER
-// ============================================================
-
-function savePlayer() {
-
-    try {
-
-        localStorage.setItem(
-            PLAYER_STORAGE_KEY,
-            JSON.stringify({
-                name: playerName,
-                highScore: highScore
-            })
-        );
-
-    } catch (error) {
-
-        console.error("Error saving player:", error);
-    }
-}
-
-
-// ============================================================
-// SHOW LOBBY
-// ============================================================
-
-function showLobby() {
-
-    welcomeText.textContent = playerName;
-
-    gamePlayerName.textContent = playerName;
-
-    if (highScore > 0) {
-
-        welcomeLabel.textContent = "WELCOME BACK";
-
-        savedHighScore.textContent =
-            "HIGH SCORE: " + highScore;
-
-    } else {
-
-        welcomeLabel.textContent = "WELCOME";
-
-        savedHighScore.textContent =
-            "HIGH SCORE: 0";
-    }
-
-    showScreen(lobbyScreen);
 }
 
 
@@ -151,28 +382,45 @@ function showLobby() {
 
 if (startIntroButton) {
 
-    startIntroButton.onclick = function () {
+    startIntroButton.onclick =
+        async function () {
 
-        /*
-         * If the player has already played on this browser,
-         * go directly to the lobby.
-         */
+            /*
+             * We no longer use localStorage
+             * for player data.
+             */
 
-        if (loadPlayer()) {
+            if (
+                playerName &&
+                playerId
+            ) {
 
-            showLobby();
+                showLobby();
 
-        } else {
+                return;
+            }
+
 
             showScreen(nameScreen);
 
-            setTimeout(function () {
 
-                playerNameInput.focus();
+            playerNameInput.value =
+                "";
 
-            }, 100);
-        }
-    };
+
+            nameError.textContent =
+                "";
+
+
+            setTimeout(
+                function () {
+
+                    playerNameInput.focus();
+
+                },
+                100
+            );
+        };
 }
 
 
@@ -182,11 +430,12 @@ if (startIntroButton) {
 
 if (nameButton) {
 
-    nameButton.onclick = function () {
+    nameButton.onclick =
+        function () {
 
-        registerPlayer();
+            registerPlayer();
 
-    };
+        };
 }
 
 
@@ -215,19 +464,28 @@ if (playerNameInput) {
 // REGISTER PLAYER
 // ============================================================
 
-function registerPlayer() {
+async function registerPlayer() {
 
     /*
-     * Get whatever the player typed.
+     * Prevent multiple clicks
+     * while connecting.
      */
+
+    if (
+        nameButton.disabled
+    ) {
+
+        return;
+    }
+
 
     const enteredName =
         playerNameInput.value.trim();
 
 
-    /*
-     * Check empty name.
-     */
+    // --------------------------------------------------------
+    // EMPTY NAME
+    // --------------------------------------------------------
 
     if (enteredName === "") {
 
@@ -240,9 +498,9 @@ function registerPlayer() {
     }
 
 
-    /*
-     * Minimum length.
-     */
+    // --------------------------------------------------------
+    // MINIMUM LENGTH
+    // --------------------------------------------------------
 
     if (enteredName.length < 2) {
 
@@ -255,9 +513,9 @@ function registerPlayer() {
     }
 
 
-    /*
-     * Maximum length.
-     */
+    // --------------------------------------------------------
+    // MAXIMUM LENGTH
+    // --------------------------------------------------------
 
     if (enteredName.length > 16) {
 
@@ -270,10 +528,9 @@ function registerPlayer() {
     }
 
 
-    /*
-     * Only allow normal letters, numbers,
-     * spaces, underscore and hyphen.
-     */
+    // --------------------------------------------------------
+    // VALID CHARACTERS
+    // --------------------------------------------------------
 
     const validName =
         /^[a-zA-Z0-9 _-]+$/;
@@ -290,39 +547,80 @@ function registerPlayer() {
     }
 
 
+    // --------------------------------------------------------
+    // CONNECT TO SUPABASE
+    // --------------------------------------------------------
+
+    nameButton.disabled = true;
+
+    nameButton.textContent =
+        "CONNECTING...";
+
+
+    const success =
+        await loadOrCreatePlayer(
+            enteredName
+        );
+
+
+    nameButton.disabled = false;
+
+    nameButton.textContent =
+        "CONTINUE";
+
+
+    if (!success) {
+
+        return;
+    }
+
+
     /*
-     * IMPORTANT:
-     *
-     * This is a NEW player only if no player
-     * is already saved in this browser.
-     *
-     * We do NOT compare the name against itself.
-     *
-     * Therefore the player will NOT get:
-     * "This name is already taken"
-     * when returning to the same browser.
-     */
-
-    playerName =
-        enteredName;
-
-
-    highScore =
-        0;
-
-
-    savePlayer();
-
-
-    nameError.textContent =
-        "";
-
-
-    /*
-     * Go to the lobby.
+     * Player successfully loaded/created.
      */
 
     showLobby();
+}
+
+
+// ============================================================
+// SHOW LOBBY
+// ============================================================
+
+function showLobby() {
+
+    welcomeText.textContent =
+        playerName;
+
+
+    gamePlayerName.textContent =
+        playerName;
+
+
+    if (highScore > 0) {
+
+        welcomeLabel.textContent =
+            "WELCOME BACK";
+
+
+        savedHighScore.textContent =
+            "HIGH SCORE: " +
+            highScore;
+
+    } else {
+
+        welcomeLabel.textContent =
+            "WELCOME";
+
+
+        savedHighScore.textContent =
+            "HIGH SCORE: 0";
+    }
+
+
+    showScreen(
+        lobbyScreen
+    );
 }
 
 
@@ -332,11 +630,12 @@ function registerPlayer() {
 
 if (playButton) {
 
-    playButton.onclick = function () {
+    playButton.onclick =
+        function () {
 
-        startGame();
+            startGame();
 
-    };
+        };
 }
 
 
@@ -346,11 +645,12 @@ if (playButton) {
 
 if (retryButton) {
 
-    retryButton.onclick = function () {
+    retryButton.onclick =
+        function () {
 
-        startGame();
+            startGame();
 
-    };
+        };
 }
 
 
@@ -359,9 +659,11 @@ if (retryButton) {
 // ============================================================
 
 let gameRunning = false;
+
 let gameAnimationId = null;
 
 let lastTime = 0;
+
 let elapsedTime = 0;
 
 let score = 0;
@@ -370,8 +672,11 @@ let groundY = 0;
 
 let currentSpeed = 360;
 
+
 const BASE_SPEED = 360;
+
 const MAX_SPEED = 620;
+
 const SPEED_INCREASE = 3.2;
 
 
@@ -409,25 +714,33 @@ const player = {
 // CHARACTER SPRITE
 // ============================================================
 
-const playerSprite = new Image();
+const playerSprite =
+    new Image();
+
 
 playerSprite.src =
     "assets/character-run.png";
 
+
 let spriteLoaded = false;
 
-playerSprite.onload = function () {
 
-    spriteLoaded = true;
-};
+playerSprite.onload =
+    function () {
+
+        spriteLoaded = true;
+
+    };
 
 
-playerSprite.onerror = function () {
+playerSprite.onerror =
+    function () {
 
-    console.warn(
-        "character-run.png could not be loaded."
-    );
-};
+        console.warn(
+            "character-run.png could not be loaded."
+        );
+
+    };
 
 
 const FRAME_COUNT = 8;
@@ -467,7 +780,9 @@ function startGame() {
 
     if (!playerName) {
 
-        showScreen(nameScreen);
+        showScreen(
+            nameScreen
+        );
 
         return;
     }
@@ -489,9 +804,11 @@ function startGame() {
 
     score = 0;
 
-    currentSpeed = BASE_SPEED;
+    currentSpeed =
+        BASE_SPEED;
 
     obstacles = [];
+
 
     distanceToNextObstacle =
         randomObstacleDistance();
@@ -514,7 +831,8 @@ function startGame() {
 
 
     player.y =
-        groundY - player.height;
+        groundY -
+        player.height;
 
 
     gamePlayerName.textContent =
@@ -525,7 +843,9 @@ function startGame() {
         "0";
 
 
-    showScreen(gameScreen);
+    showScreen(
+        gameScreen
+    );
 
 
     lastTime =
@@ -533,7 +853,9 @@ function startGame() {
 
 
     gameAnimationId =
-        requestAnimationFrame(gameLoop);
+        requestAnimationFrame(
+            gameLoop
+        );
 }
 
 
@@ -544,13 +866,17 @@ function startGame() {
 function gameLoop(currentTime) {
 
     if (!gameRunning) {
+
         return;
     }
 
 
     const deltaTime =
         Math.min(
-            (currentTime - lastTime) / 1000,
+            (
+                currentTime -
+                lastTime
+            ) / 1000,
             0.033
         );
 
@@ -584,13 +910,23 @@ function gameLoop(currentTime) {
         score;
 
 
-    updatePlayer(deltaTime);
+    updatePlayer(
+        deltaTime
+    );
 
-    updateObstacles(deltaTime);
 
-    updateSprite(deltaTime);
+    updateObstacles(
+        deltaTime
+    );
+
+
+    updateSprite(
+        deltaTime
+    );
+
 
     checkCollisions();
+
 
     drawGame();
 
@@ -598,7 +934,9 @@ function gameLoop(currentTime) {
     if (gameRunning) {
 
         gameAnimationId =
-            requestAnimationFrame(gameLoop);
+            requestAnimationFrame(
+                gameLoop
+            );
     }
 }
 
@@ -630,15 +968,19 @@ function updatePlayer(deltaTime) {
 
     if (player.y >= floorY) {
 
-        player.y = floorY;
+        player.y =
+            floorY;
 
-        player.velocityY = 0;
+        player.velocityY =
+            0;
 
-        player.grounded = true;
+        player.grounded =
+            true;
 
     } else {
 
-        player.grounded = false;
+        player.grounded =
+            false;
     }
 }
 
@@ -650,11 +992,13 @@ function updatePlayer(deltaTime) {
 function jump() {
 
     if (!gameRunning) {
+
         return;
     }
 
 
     if (!player.grounded) {
+
         return;
     }
 
@@ -663,7 +1007,8 @@ function jump() {
         player.jumpPower;
 
 
-    player.grounded = false;
+    player.grounded =
+        false;
 }
 
 
@@ -679,6 +1024,7 @@ window.addEventListener(
             document.activeElement ===
             playerNameInput
         ) {
+
             return;
         }
 
@@ -705,12 +1051,15 @@ canvas.addEventListener(
     function (event) {
 
         if (!gameRunning) {
+
             return;
         }
+
 
         event.preventDefault();
 
         jump();
+
     },
     {
         passive: false
@@ -725,6 +1074,7 @@ canvas.addEventListener(
 function updateSprite(deltaTime) {
 
     if (!spriteLoaded) {
+
         return;
     }
 
@@ -738,11 +1088,14 @@ function updateSprite(deltaTime) {
         player.frameSpeed
     ) {
 
-        player.frameTimer = 0;
+        player.frameTimer =
+            0;
+
 
         player.frame =
             (
-                player.frame + 1
+                player.frame +
+                1
             ) %
             FRAME_COUNT;
     }
@@ -768,10 +1121,12 @@ function createObstacle() {
     obstacles.push({
 
         x:
-            window.innerWidth + 40,
+            window.innerWidth +
+            40,
 
         y:
-            groundY - height,
+            groundY -
+            height,
 
         width:
             width,
@@ -794,10 +1149,12 @@ function updateObstacles(deltaTime) {
 
 
     if (
-        distanceToNextObstacle <= 0
+        distanceToNextObstacle <=
+        0
     ) {
 
         createObstacle();
+
 
         distanceToNextObstacle =
             randomObstacleDistance();
@@ -810,6 +1167,7 @@ function updateObstacles(deltaTime) {
             obstacle.x -=
                 currentSpeed *
                 deltaTime;
+
         }
     );
 
@@ -823,6 +1181,7 @@ function updateObstacles(deltaTime) {
                     obstacle.width >
                     -100
                 );
+
             }
         );
 }
@@ -837,16 +1196,20 @@ function checkCollisions() {
     const playerBox = {
 
         x:
-            player.x + 29,
+            player.x +
+            29,
 
         y:
-            player.y + 28,
+            player.y +
+            28,
 
         width:
-            player.width - 58,
+            player.width -
+            58,
 
         height:
-            player.height - 34
+            player.height -
+            34
     };
 
 
@@ -896,20 +1259,26 @@ function checkCollisions() {
 function gameOver() {
 
     if (!gameRunning) {
+
         return;
     }
 
 
-    gameRunning = false;
+    gameRunning =
+        false;
 
 
-    if (gameAnimationId !== null) {
+    if (
+        gameAnimationId !==
+        null
+    ) {
 
         cancelAnimationFrame(
             gameAnimationId
         );
 
-        gameAnimationId = null;
+        gameAnimationId =
+            null;
     }
 
 
@@ -918,7 +1287,8 @@ function gameOver() {
 
 
     const isNewHighScore =
-        score > oldHighScore;
+        score >
+        oldHighScore;
 
 
     if (isNewHighScore) {
@@ -926,7 +1296,16 @@ function gameOver() {
         highScore =
             score;
 
-        savePlayer();
+        /*
+         * Update Supabase in the background.
+         *
+         * The result screen does not wait
+         * for the network request.
+         */
+
+        updateHighScoreInDatabase(
+            highScore
+        );
     }
 
 
@@ -943,6 +1322,19 @@ function gameOver() {
         "new-record",
         isNewHighScore
     );
+
+
+    /*
+     * Keep the lobby display updated
+     * for the next retry.
+     */
+
+    if (isNewHighScore) {
+
+        savedHighScore.textContent =
+            "HIGH SCORE: " +
+            highScore;
+    }
 
 
     showScreen(
@@ -1074,17 +1466,22 @@ function drawStars(
 
             ctx.beginPath();
 
+
             ctx.arc(
 
-                width * star[0],
+                width *
+                star[0],
 
-                height * star[1],
+                height *
+                star[1],
 
                 star[2],
 
                 0,
+
                 Math.PI * 2
             );
+
 
             ctx.fill();
         }
@@ -1107,52 +1504,63 @@ function drawMountains(
 
     ctx.beginPath();
 
+
     ctx.moveTo(
         0,
         height * 0.48
     );
+
 
     ctx.lineTo(
         width * 0.14,
         height * 0.29
     );
 
+
     ctx.lineTo(
         width * 0.29,
         height * 0.43
     );
+
 
     ctx.lineTo(
         width * 0.46,
         height * 0.25
     );
 
+
     ctx.lineTo(
         width * 0.64,
         height * 0.45
     );
+
 
     ctx.lineTo(
         width * 0.80,
         height * 0.30
     );
 
+
     ctx.lineTo(
         width,
         height * 0.44
     );
 
+
     ctx.lineTo(
         width,
         height * 0.62
     );
+
 
     ctx.lineTo(
         0,
         height * 0.62
     );
 
+
     ctx.closePath();
+
 
     ctx.fill();
 
@@ -1163,52 +1571,63 @@ function drawMountains(
 
     ctx.beginPath();
 
+
     ctx.moveTo(
         0,
         height * 0.57
     );
+
 
     ctx.lineTo(
         width * 0.18,
         height * 0.40
     );
 
+
     ctx.lineTo(
         width * 0.35,
         height * 0.56
     );
+
 
     ctx.lineTo(
         width * 0.53,
         height * 0.39
     );
 
+
     ctx.lineTo(
         width * 0.72,
         height * 0.56
     );
+
 
     ctx.lineTo(
         width * 0.88,
         height * 0.43
     );
 
+
     ctx.lineTo(
         width,
         height * 0.55
     );
 
+
     ctx.lineTo(
         width,
         height * 0.68
     );
+
 
     ctx.lineTo(
         0,
         height * 0.68
     );
 
+
     ctx.closePath();
+
 
     ctx.fill();
 }
@@ -1220,7 +1639,9 @@ function drawMountains(
 
 function drawGround() {
 
-    const roadHeight = 105;
+    const roadHeight =
+        105;
+
 
     const roadY =
         window.innerHeight -
@@ -1251,9 +1672,12 @@ function drawGround() {
     );
 
 
-    const markWidth = 55;
+    const markWidth =
+        55;
 
-    const gap = 90;
+
+    const gap =
+        90;
 
 
     const offset =
@@ -1274,7 +1698,9 @@ function drawGround() {
     for (
         let x = -offset;
         x < window.innerWidth;
-        x += markWidth + gap
+        x +=
+            markWidth +
+            gap
     ) {
 
         ctx.fillRect(
@@ -1361,7 +1787,8 @@ function drawObstacles() {
                 "rgba(195,165,235,0.65)";
 
 
-            ctx.lineWidth = 1;
+            ctx.lineWidth =
+                1;
 
 
             ctx.strokeRect(
@@ -1430,9 +1857,12 @@ function drawPlayer() {
 
 function drawFallbackPlayer() {
 
-    const x = player.x;
+    const x =
+        player.x;
 
-    const y = player.y;
+
+    const y =
+        player.y;
 
 
     ctx.fillStyle =
@@ -1478,35 +1908,42 @@ function drawFallbackPlayer() {
         y + 39
     );
 
+
     ctx.lineTo(
         x + 38,
         y + 8
     );
+
 
     ctx.lineTo(
         x + 48,
         y + 28
     );
 
+
     ctx.lineTo(
         x + 59,
         y + 5
     );
+
 
     ctx.lineTo(
         x + 68,
         y + 27
     );
 
+
     ctx.lineTo(
         x + 79,
         y + 15
     );
 
+
     ctx.lineTo(
         x + 76,
         y + 43
     );
+
 
     ctx.closePath();
 
@@ -1549,19 +1986,23 @@ function resizeCanvas() {
 
 
     canvas.width =
-        window.innerWidth * dpr;
+        window.innerWidth *
+        dpr;
 
 
     canvas.height =
-        window.innerHeight * dpr;
+        window.innerHeight *
+        dpr;
 
 
     canvas.style.width =
-        window.innerWidth + "px";
+        window.innerWidth +
+        "px";
 
 
     canvas.style.height =
-        window.innerHeight + "px";
+        window.innerHeight +
+        "px";
 
 
     ctx.setTransform(
@@ -1591,4 +2032,6 @@ window.addEventListener(
 
 resizeCanvas();
 
-showScreen(introScreen);
+showScreen(
+    introScreen
+);
