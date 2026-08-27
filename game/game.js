@@ -1,5 +1,5 @@
 // ============================================================
-// ANIME RUNNER - SUPABASE DEBUG VERSION
+// ANIME RUNNER - SUPABASE FIXED VERSION
 // ============================================================
 
 
@@ -32,6 +32,7 @@ if (
             error
         );
     }
+
 } else {
 
     console.error(
@@ -126,7 +127,7 @@ let playerId = null;
 
 
 // ============================================================
-// SCREEN
+// SCREEN FUNCTION
 // ============================================================
 
 function showScreen(screen) {
@@ -149,7 +150,7 @@ function showScreen(screen) {
 
 
 // ============================================================
-// DATABASE - FIND PLAYER
+// FIND PLAYER IN SUPABASE
 // ============================================================
 
 async function getPlayerFromDatabase(name) {
@@ -169,7 +170,7 @@ async function getPlayerFromDatabase(name) {
         const { data, error } =
             await supabaseClient
                 .from("players")
-                .select("id,name,high_score")
+                .select("id,name,highscore")
                 .eq("name", name)
                 .limit(1)
                 .maybeSingle();
@@ -229,7 +230,7 @@ async function getPlayerFromDatabase(name) {
 
 
 // ============================================================
-// DATABASE - CREATE PLAYER
+// CREATE PLAYER IN SUPABASE
 // ============================================================
 
 async function createPlayerInDatabase(name) {
@@ -253,10 +254,10 @@ async function createPlayerInDatabase(name) {
 
                     name: name,
 
-                    high_score: 0
+                    highscore: 0
 
                 })
-                .select("id,name,high_score")
+                .select("id,name,highscore")
                 .single();
 
 
@@ -320,7 +321,7 @@ async function createPlayerInDatabase(name) {
 
 
 // ============================================================
-// DATABASE - LOAD OR CREATE PLAYER
+// LOAD OR CREATE PLAYER
 // ============================================================
 
 async function loadOrCreatePlayer(name) {
@@ -338,9 +339,9 @@ async function loadOrCreatePlayer(name) {
         "CONNECTING...";
 
 
-    /*
-     * Check whether the player already exists.
-     */
+    // --------------------------------------------------------
+    // LOOK FOR EXISTING PLAYER
+    // --------------------------------------------------------
 
     const existingPlayer =
         await getPlayerFromDatabase(name);
@@ -355,7 +356,7 @@ async function loadOrCreatePlayer(name) {
             existingPlayer.name;
 
         highScore =
-            Number(existingPlayer.high_score) || 0;
+            Number(existingPlayer.highscore) || 0;
 
 
         nameError.textContent =
@@ -372,10 +373,9 @@ async function loadOrCreatePlayer(name) {
     }
 
 
-    /*
-     * Player does not exist.
-     * Create a new player.
-     */
+    // --------------------------------------------------------
+    // CREATE NEW PLAYER
+    // --------------------------------------------------------
 
     const newPlayer =
         await createPlayerInDatabase(name);
@@ -397,7 +397,7 @@ async function loadOrCreatePlayer(name) {
         newPlayer.name;
 
     highScore =
-        Number(newPlayer.high_score) || 0;
+        Number(newPlayer.highscore) || 0;
 
 
     nameError.textContent =
@@ -409,7 +409,7 @@ async function loadOrCreatePlayer(name) {
 
 
 // ============================================================
-// DATABASE - UPDATE HIGH SCORE
+// UPDATE HIGH SCORE
 // ============================================================
 
 async function updateHighScoreInDatabase(newScore) {
@@ -434,7 +434,7 @@ async function updateHighScoreInDatabase(newScore) {
                 .from("players")
                 .update({
 
-                    high_score: newScore
+                    highscore: newScore
 
                 })
                 .eq("id", playerId);
@@ -586,7 +586,7 @@ async function registerPlayer() {
 
 
     // --------------------------------------------------------
-    // EMPTY
+    // EMPTY NAME
     // --------------------------------------------------------
 
     if (enteredName === "") {
@@ -601,7 +601,7 @@ async function registerPlayer() {
 
 
     // --------------------------------------------------------
-    // MINIMUM
+    // MINIMUM LENGTH
     // --------------------------------------------------------
 
     if (enteredName.length < 2) {
@@ -616,7 +616,7 @@ async function registerPlayer() {
 
 
     // --------------------------------------------------------
-    // MAXIMUM
+    // MAXIMUM LENGTH
     // --------------------------------------------------------
 
     if (enteredName.length > 16) {
@@ -650,7 +650,7 @@ async function registerPlayer() {
 
 
     // --------------------------------------------------------
-    // SUPABASE
+    // CONNECT TO DATABASE
     // --------------------------------------------------------
 
     nameButton.disabled =
@@ -862,7 +862,7 @@ let distanceToNextObstacle = 0;
 
 
 // ============================================================
-// RANDOM DISTANCE
+// RANDOM OBSTACLE DISTANCE
 // ============================================================
 
 function randomObstacleDistance() {
@@ -1416,11 +1416,6 @@ function gameOver() {
             score;
 
 
-        /*
-         * Save to Supabase.
-         * This happens in the background.
-         */
-
         updateHighScoreInDatabase(
             highScore
         );
@@ -1442,14 +1437,6 @@ function gameOver() {
     );
 
 
-    if (isNewHighScore) {
-
-        savedHighScore.textContent =
-            "HIGH SCORE: " +
-            highScore;
-    }
-
-
     showScreen(
         surpriseScreen
     );
@@ -1457,7 +1444,7 @@ function gameOver() {
 
 
 // ============================================================
-// DRAW
+// DRAW GAME
 // ============================================================
 
 function drawGame() {
