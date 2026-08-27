@@ -878,3 +878,98 @@ button:active {
     }
 
 }
+/* =========================================================
+   MOBILE FIX FOR UNKNOWN INTRO TITLE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    #introScreen {
+        width: 100%;
+        max-width: 100vw;
+        overflow: hidden;
+    }
+
+    .intro-content {
+        width: 100%;
+        max-width: 100vw;
+
+        padding:
+            0 18px;
+
+        overflow: hidden;
+
+        text-align: center;
+    }
+
+    .intro-content h1 {
+        width: 100%;
+        max-width: 100%;
+
+        /*
+           Smaller responsive size so UNKNOWN
+           always fits completely on the phone.
+        */
+        font-size:
+            clamp(
+                38px,
+                13vw,
+                80px
+            );
+
+        /*
+           Reduce the large desktop spacing
+           on mobile.
+        */
+        letter-spacing:
+            clamp(
+                3px,
+                1.5vw,
+                8px
+            );
+
+        line-height: 1;
+
+        white-space: nowrap;
+
+        overflow: hidden;
+
+        text-align: center;
+
+        /*
+           Keep the complete word centered.
+        */
+        box-sizing: border-box;
+    }
+
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 380px) {
+
+    .intro-content {
+        padding:
+            0 12px;
+    }
+
+    .intro-content h1 {
+        font-size:
+            clamp(
+                32px,
+                12vw,
+                55px
+            );
+
+        letter-spacing:
+            clamp(
+                2px,
+                1vw,
+                5px
+            );
+    }
+
+}
