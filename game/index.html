@@ -1,141 +1,264 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
     <title>Anime Runner</title>
-    <link rel="stylesheet" href="game.css">
+
+    <link
+        rel="stylesheet"
+        href="game.css"
+    >
+
 </head>
+
 
 <body>
 
-    <div id="game">
-
-        <!-- INTRO -->
-        <section id="introScreen" class="screen active">
-            <div class="intro-glow"></div>
-
-            <div class="intro-content">
-                <p class="small-text">A NEW JOURNEY BEGINS</p>
-
-                <h1>UNKNOWN</h1>
-
-                <p class="intro-description">
-                    Every journey begins with a single step.
-                </p>
-
-                <button id="startIntroButton">BEGIN</button>
-            </div>
-        </section>
+<div id="game">
 
 
-        <!-- NAME SCREEN -->
-        <section id="nameScreen" class="screen">
+    <!-- =====================================================
+         INTRO
+    ====================================================== -->
 
-            <div class="panel">
-                <p class="small-text">IDENTITY</p>
+    <section
+        id="introScreen"
+        class="screen active"
+    >
 
-                <h2>ENTER YOUR NAME</h2>
+        <div class="intro-glow"></div>
 
-                <input
-                    type="text"
-                    id="playerName"
-                    maxlength="16"
-                    placeholder="Your name..."
-                    autocomplete="off"
-                >
+        <div class="intro-content">
 
-                <button id="nameButton">CONTINUE</button>
+            <p class="small-text">
+                A NEW JOURNEY BEGINS
+            </p>
 
-                <p id="nameError"></p>
-            </div>
+            <h1>
+                UNKNOWN
+            </h1>
 
-        </section>
+            <p class="intro-description">
+                Every journey begins with a single step.
+            </p>
 
+            <button id="startIntroButton">
+                BEGIN
+            </button>
 
-        <!-- LOBBY -->
-        <section id="lobbyScreen" class="screen">
+        </div>
 
-            <div class="lobby-background"></div>
-
-            <div class="lobby-content">
-
-                <p class="small-text">WELCOME</p>
-
-                <h1 id="welcomeText">WELCOME</h1>
-
-                <div class="character-placeholder">
-                    <div class="character-glow"></div>
-                    <div class="character">
-                        <span>✦</span>
-                    </div>
-                </div>
-
-                <button id="playButton">PLAY</button>
-
-            </div>
-
-        </section>
+    </section>
 
 
-        <!-- GAME -->
-        <section id="gameScreen" class="screen">
 
-            <canvas id="gameCanvas"></canvas>
+    <!-- =====================================================
+         NAME SCREEN
+    ====================================================== -->
 
-            <div id="gameUI">
+    <section
+        id="nameScreen"
+        class="screen"
+    >
 
-                <div class="game-top">
+        <div class="panel">
 
-                    <div class="player-display">
-                        <span id="gamePlayerName"></span>
-                    </div>
+            <p class="small-text">
+                IDENTITY
+            </p>
 
-                    <div class="timer">
-                        <span id="timer">30</span>
-                    </div>
+            <h2>
+                ENTER YOUR NAME
+            </h2>
 
-                </div>
-
-            </div>
-
-        </section>
-
-
-        <!-- END -->
-        <section id="endScreen" class="screen">
-
-            <div class="end-content">
-
-                <p class="small-text">JOURNEY COMPLETE</p>
-
-                <h1>END</h1>
-
-                <p id="endMessage"></p>
-                <button id="retryButton">RETRY</button>
-
-            </div>
-
-        </section>
-
-
-        <!-- SURPRISE -->
-        <section id="surpriseScreen" class="screen">
-
-            <img
-                id="surpriseImage"
-                src="assets/surprise.png"
-                alt="Surprise"
+            <input
+                type="text"
+                id="playerName"
+                maxlength="16"
+                placeholder="Your name..."
+                autocomplete="off"
             >
-             <a href="../index.html" id="homeButton">
-                 GO BACK TO HOME
-             </a>
 
-        </section>
+            <button id="nameButton">
+                CONTINUE
+            </button>
 
-    </div>
+            <p id="nameError"></p>
 
-    <script src="game.js"></script>
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         LOBBY
+    ====================================================== -->
+
+    <section
+        id="lobbyScreen"
+        class="screen"
+    >
+
+        <div class="lobby-background"></div>
+
+        <div class="lobby-content">
+
+            <p
+                class="small-text"
+                id="welcomeLabel"
+            >
+                WELCOME
+            </p>
+
+            <h1 id="welcomeText">
+                WELCOME
+            </h1>
+
+            <p
+                id="savedHighScore"
+                class="saved-high-score"
+            >
+                HIGH SCORE: 0
+            </p>
+
+            <div class="character-placeholder">
+
+                <div class="character-glow"></div>
+
+                <div class="character">
+                    <span>✦</span>
+                </div>
+
+            </div>
+
+            <button id="playButton">
+                PLAY
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         GAME
+    ====================================================== -->
+
+    <section
+        id="gameScreen"
+        class="screen"
+    >
+
+        <canvas id="gameCanvas"></canvas>
+
+
+        <div id="gameUI">
+
+            <div class="game-top">
+
+                <div class="player-display">
+
+                    <span id="gamePlayerName">
+                    </span>
+
+                </div>
+
+
+                <div class="score-display">
+
+                    SCORE
+                    <span id="score">
+                        0
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         SURPRISE / GAME OVER
+    ====================================================== -->
+
+    <section
+        id="surpriseScreen"
+        class="screen"
+    >
+
+        <img
+            id="surpriseImage"
+            src="assets/surprise.png"
+            alt="Surprise"
+        >
+
+
+        <div id="resultPanel">
+
+            <p class="small-text">
+                JOURNEY COMPLETE
+            </p>
+
+
+            <h1 id="resultTitle">
+                YOUR SCORE
+            </h1>
+
+
+            <div id="resultScore">
+                0
+            </div>
+
+
+            <p id="resultHighScore">
+                HIGH SCORE: 0
+            </p>
+
+
+            <p
+                id="newRecordText"
+                class="new-record-text"
+            >
+                NEW HIGH SCORE
+            </p>
+
+
+            <button id="retryButton">
+                RETRY
+            </button>
+
+
+            <a
+                href="../index.html"
+                id="homeButton"
+            >
+                GO BACK TO HOME
+            </a>
+
+        </div>
+
+    </section>
+
+
+</div>
+
+
+<script src="game.js"></script>
 
 </body>
+
 </html>

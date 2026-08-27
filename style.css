@@ -1,3 +1,4 @@
+```css
 * {
     margin: 0;
     padding: 0;
@@ -29,13 +30,9 @@ body {
 
 .background {
     position: fixed;
-
     inset: 0;
-
     overflow: hidden;
-
     pointer-events: none;
-
     z-index: 0;
 }
 
@@ -44,7 +41,6 @@ body {
     content: "";
 
     position: absolute;
-
     inset: 0;
 
     background:
@@ -89,7 +85,6 @@ body {
 
 .fog-one {
     left: -200px;
-
     bottom: 10%;
 
     animation:
@@ -103,7 +98,6 @@ body {
 
 .fog-two {
     right: -200px;
-
     top: 10%;
 
     background: rgba(30, 50, 120, 0.08);
@@ -124,7 +118,13 @@ body {
 .welcome {
     position: absolute;
 
-    top: 50%;
+    /*
+       IMPORTANT:
+       The entire title group is at the top
+       immediately. It never starts in the center.
+    */
+
+    top: 45px;
     left: 50%;
 
     width: 100%;
@@ -137,9 +137,6 @@ body {
 
     transform:
         translateX(-50%);
-
-    /* The title starts at the top immediately. */
-    animation: none;
 }
 
 
@@ -147,32 +144,13 @@ body {
    ENERGY SLASH / BIRD
 ================================ */
 
-/*
-   IMPORTANT:
-
-   The slash is now a child of .welcome.
-
-   Therefore it automatically moves
-   with the entire title.
-
-   There is NO separate movement
-   animation anymore.
-*/
-
 .slash {
     position: absolute;
 
     width: 120%;
-
     height: 2px;
 
     left: -10%;
-
-    /*
-       Position relative to the welcome
-       group instead of the entire screen.
-    */
-
     top: 48%;
 
     background:
@@ -375,10 +353,6 @@ h1 span:last-child {
 
 
 /* ================================
-   MOVE ENTIRE INTRO TO TOP
-================================ */
-
-/* ================================
    TITLE REVEAL
 ================================ */
 
@@ -527,14 +501,12 @@ h1 span:last-child {
 
     from {
         transform: scale(1);
-
         opacity: 0.7;
     }
 
 
     to {
         transform: scale(1.12);
-
         opacity: 1;
     }
 }
@@ -677,6 +649,12 @@ h1 span:last-child {
         letter-spacing: 2px;
     }
 }
+
+
+/* ================================
+   NIFRATH'S
+================================ */
+
 .nifraths {
     position: absolute;
 
@@ -695,9 +673,10 @@ h1 span:last-child {
     color: rgba(210, 170, 255, 0.9);
 
     text-shadow:
-       0 0 8px rgba(192, 132, 252, 0.45);
+        0 0 8px rgba(192, 132, 252, 0.45);
 
     pointer-events: none;
 
     white-space: nowrap;
 }
+```
