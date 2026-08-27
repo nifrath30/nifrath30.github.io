@@ -4,11 +4,15 @@
     box-sizing: border-box;
 }
 
+html,
+body {
+    width: 100%;
+    min-height: 100%;
+    overflow-x: hidden;
+}
 
 body {
     min-height: 100vh;
-
-    overflow-x: hidden;
 
     background:
         radial-gradient(
@@ -29,7 +33,6 @@ body {
 
 .background {
     position: fixed;
-
     inset: 0;
 
     overflow: hidden;
@@ -39,12 +42,10 @@ body {
     z-index: 0;
 }
 
-
 .background::before {
     content: "";
 
     position: absolute;
-
     inset: 0;
 
     background:
@@ -53,7 +54,6 @@ body {
             rgba(102, 0, 153, 0.12),
             transparent 30%
         ),
-
         radial-gradient(
             circle at 80% 70%,
             rgba(20, 50, 120, 0.10),
@@ -79,17 +79,16 @@ body {
     width: 600px;
     height: 180px;
 
-    background: rgba(100, 20, 130, 0.08);
+    background:
+        rgba(100, 20, 130, 0.08);
 
     filter: blur(70px);
 
     border-radius: 50%;
 }
 
-
 .fog-one {
     left: -200px;
-
     bottom: 10%;
 
     animation:
@@ -100,13 +99,12 @@ body {
         alternate;
 }
 
-
 .fog-two {
     right: -200px;
-
     top: 10%;
 
-    background: rgba(30, 50, 120, 0.08);
+    background:
+        rgba(30, 50, 120, 0.08);
 
     animation:
         fogMoveReverse
@@ -124,55 +122,44 @@ body {
 .welcome {
     position: absolute;
 
-    top: 50%;
-    left: 50%;
+    /*
+       IMPORTANT:
+       The title now starts near the TOP.
+       It no longer starts in the center.
+    */
+    top: 10vh;
+    left: 0;
 
     width: 100%;
 
-    padding: 30px;
+    padding:
+        20px
+        5vw;
 
     text-align: center;
 
     z-index: 2;
 
-    transform:
-        translateX(-50%);
+    transform: none;
 
-    /* The title starts at the top immediately. */
+    /*
+       NO movement from center to top.
+    */
     animation: none;
 }
 
 
 /* ================================
-   ENERGY SLASH / BIRD
+   ENERGY SLASH
 ================================ */
-
-/*
-   IMPORTANT:
-
-   The slash is now a child of .welcome.
-
-   Therefore it automatically moves
-   with the entire title.
-
-   There is NO separate movement
-   animation anymore.
-*/
 
 .slash {
     position: absolute;
 
     width: 120%;
-
     height: 2px;
 
     left: -10%;
-
-    /*
-       Position relative to the welcome
-       group instead of the entire screen.
-    */
-
     top: 48%;
 
     background:
@@ -213,11 +200,14 @@ body {
 ================================ */
 
 .line {
-    width: min(500px, 65vw);
+    width:
+        min(500px, 65vw);
 
     height: 1px;
 
-    margin: 18px auto;
+    margin:
+        18px
+        auto;
 
     background:
         linear-gradient(
@@ -252,22 +242,54 @@ h1 {
     display: flex;
 
     justify-content: center;
-
     align-items: center;
 
-    gap: clamp(6px, 1.2vw, 18px);
+    gap:
+        clamp(
+            4px,
+            1.2vw,
+            18px
+        );
 
-    white-space: nowrap;
+    /*
+       IMPORTANT:
+       Allow the title to fit on phones.
+    */
+    width: 100%;
 
-    font-family: "Cinzel", serif;
+    max-width: 100%;
+
+    overflow: hidden;
+
+    /*
+       Do not allow the title itself
+       to create horizontal scrolling.
+    */
+    white-space: normal;
+
+    overflow-wrap: break-word;
+
+    font-family:
+        "Cinzel",
+        serif;
 
     font-weight: 900;
 
     font-size:
-        clamp(1rem, 3vw, 3.5rem);
+        clamp(
+            1rem,
+            3vw,
+            3.5rem
+        );
+
+    line-height: 1.1;
 
     letter-spacing:
-        clamp(1px, 0.25vw, 5px);
+        clamp(
+            1px,
+            0.25vw,
+            5px
+        );
 
     color: #e9e3ef;
 
@@ -297,31 +319,34 @@ h1 span {
 
     opacity: 0;
 
-    transform:
-        translateY(30px);
+    /*
+       IMPORTANT:
+       The words no longer travel upward.
+       They simply fade in at their final position.
+    */
+    transform: none;
 
-    animation:
-        wordReveal
-        1s
-        cubic-bezier(.16, 1, .3, 1)
-        forwards;
+    max-width: 100%;
 
     text-shadow:
         0 2px 3px #000,
         0 0 8px rgba(130, 50, 190, 0.5),
         0 0 25px rgba(100, 30, 160, 0.25);
-}
 
+    animation:
+        wordAppear
+        1s
+        ease-out
+        forwards;
+}
 
 h1 span:nth-child(1) {
     animation-delay: 0.6s;
 }
 
-
 h1 span:nth-child(2) {
     animation-delay: 0.9s;
 }
-
 
 h1 span:nth-child(3) {
     animation-delay: 1.2s;
@@ -353,20 +378,30 @@ h1 span:last-child {
 
     margin-top: 22px;
 
-    font-family: "Orbitron", sans-serif;
+    font-family:
+        "Orbitron",
+        sans-serif;
 
     font-size:
-        clamp(0.5rem, 0.8vw, 0.85rem);
+        clamp(
+            0.5rem,
+            0.8vw,
+            0.85rem
+        );
 
     letter-spacing:
-        clamp(3px, 0.6vw, 8px);
+        clamp(
+            3px,
+            0.6vw,
+            8px
+        );
 
     color: #82788d;
 
     opacity: 0;
 
     animation:
-        subtitleReveal
+        subtitleAppear
         1.5s
         ease-out
         1.8s
@@ -375,11 +410,8 @@ h1 span:last-child {
 
 
 /* ================================
-   MOVE ENTIRE INTRO TO TOP
-================================ */
-
-/* ================================
-   TITLE REVEAL
+   TITLE APPEAR
+   NO MOVEMENT
 ================================ */
 
 @keyframes titleReveal {
@@ -387,17 +419,11 @@ h1 span:last-child {
     from {
         opacity: 0;
 
-        letter-spacing: 10px;
-
         filter: blur(6px);
     }
 
-
     to {
         opacity: 1;
-
-        letter-spacing:
-            clamp(1px, 0.25vw, 5px);
 
         filter: blur(0);
     }
@@ -405,26 +431,24 @@ h1 span:last-child {
 
 
 /* ================================
-   WORD REVEAL
+   WORD APPEAR
+   NO MOVEMENT
 ================================ */
 
-@keyframes wordReveal {
+@keyframes wordAppear {
 
     from {
         opacity: 0;
 
-        transform:
-            translateY(35px);
+        transform: none;
 
         filter: blur(8px);
     }
 
-
     to {
         opacity: 1;
 
-        transform:
-            translateY(0);
+        transform: none;
 
         filter: blur(0);
     }
@@ -432,23 +456,32 @@ h1 span:last-child {
 
 
 /* ================================
-   SUBTITLE REVEAL
+   SUBTITLE APPEAR
+   NO MOVEMENT
 ================================ */
 
-@keyframes subtitleReveal {
+@keyframes subtitleAppear {
 
     from {
         opacity: 0;
 
-        letter-spacing: 15px;
+        letter-spacing:
+            clamp(
+                3px,
+                0.6vw,
+                8px
+            );
     }
-
 
     to {
         opacity: 1;
 
         letter-spacing:
-            clamp(3px, 0.6vw, 8px);
+            clamp(
+                3px,
+                0.6vw,
+                8px
+            );
     }
 }
 
@@ -465,7 +498,6 @@ h1 span:last-child {
 
         opacity: 0;
     }
-
 
     to {
         transform:
@@ -490,7 +522,6 @@ h1 span:last-child {
             scaleX(0);
     }
 
-
     to {
         opacity: 1;
 
@@ -512,7 +543,6 @@ h1 span:last-child {
         filter: brightness(0.9);
     }
 
-
     50% {
         filter: brightness(1.15);
     }
@@ -526,14 +556,15 @@ h1 span:last-child {
 @keyframes atmosphere {
 
     from {
-        transform: scale(1);
+        transform:
+            scale(1);
 
         opacity: 0.7;
     }
 
-
     to {
-        transform: scale(1.12);
+        transform:
+            scale(1.12);
 
         opacity: 1;
     }
@@ -551,13 +582,11 @@ h1 span:last-child {
             translateX(0);
     }
 
-
     to {
         transform:
             translateX(250px);
     }
 }
-
 
 @keyframes fogMoveReverse {
 
@@ -565,7 +594,6 @@ h1 span:last-child {
         transform:
             translateX(0);
     }
-
 
     to {
         transform:
@@ -582,12 +610,13 @@ h1 span:last-child {
     position: absolute;
 
     left: 6vw;
-
     top: 65%;
 
     display: inline-block;
 
-    padding: 14px 32px;
+    padding:
+        14px
+        32px;
 
     border:
         1px solid
@@ -621,7 +650,6 @@ h1 span:last-child {
     z-index: 20;
 }
 
-
 .enter-game-button:hover {
     transform:
         translateY(-3px);
@@ -637,10 +665,54 @@ h1 span:last-child {
         rgba(255, 255, 255, 0.18);
 }
 
-
 .enter-game-button:active {
     transform:
         scale(0.96);
+}
+
+
+/* ================================
+   NIFRATH'S
+================================ */
+
+.nifraths {
+    position: absolute;
+
+    top: 18px;
+    right: 25px;
+
+    z-index: 30;
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: 3px;
+
+    color:
+        rgba(
+            210,
+            170,
+            255,
+            0.9
+        );
+
+    text-shadow:
+        0 0 8px
+        rgba(
+            192,
+            132,
+            252,
+            0.45
+        );
+
+    pointer-events: none;
+
+    white-space: nowrap;
 }
 
 
@@ -650,17 +722,94 @@ h1 span:last-child {
 
 @media (max-width: 900px) {
 
+    .welcome {
+        /*
+           Keep the entire intro at the top
+           on phones too.
+        */
+        top: 7vh;
+
+        left: 0;
+
+        width: 100%;
+
+        padding:
+            15px
+            12px;
+    }
+
+
     h1 {
-        gap: 5px;
+        /*
+           Responsive size.
 
-        font-size: 2.5vw;
+           It cannot become wider than
+           the phone screen.
+        */
+        width: 100%;
 
-        letter-spacing: 1px;
+        max-width: 100%;
+
+        font-size:
+            clamp(
+                1rem,
+                7vw,
+                2.5rem
+            );
+
+        line-height: 1.05;
+
+        letter-spacing:
+            clamp(
+                0.5px,
+                0.4vw,
+                2px
+            );
+
+        gap: 4px;
+
+        white-space: normal;
+
+        overflow: hidden;
+    }
+
+
+    h1 span {
+        max-width: 100%;
+
+        overflow-wrap: anywhere;
+
+        transform: none;
     }
 
 
     .subtitle {
-        font-size: 0.55rem;
+        margin-top: 14px;
+
+        font-size:
+            clamp(
+                0.45rem,
+                2.2vw,
+                0.65rem
+            );
+
+        letter-spacing:
+            clamp(
+                2px,
+                1vw,
+                5px
+            );
+
+        line-height: 1.5;
+    }
+
+
+    .line {
+        width: 75vw;
+
+        margin:
+            12px
+            auto;
     }
 
 
@@ -670,34 +819,82 @@ h1 span:last-child {
         top: 68%;
 
         padding:
-            12px 24px;
+            12px
+            24px;
 
         font-size: 10px;
 
         letter-spacing: 2px;
     }
+
+
+    .nifraths {
+        top: 18px;
+
+        right: 18px;
+
+        font-size: 9px;
+
+        letter-spacing: 2px;
+    }
 }
-.nifraths {
-    position: absolute;
 
-    top: 18px;
-    right: 25px;
 
-    z-index: 30;
+/* ================================
+   SMALL PHONES
+================================ */
 
-    font-family: "Cinzel", serif;
+@media (max-width: 480px) {
 
-    font-size: 10px;
-    font-weight: 700;
+    .welcome {
+        top: 6vh;
 
-    letter-spacing: 3px;
+        padding:
+            12px
+            10px;
+    }
 
-    color: rgba(210, 170, 255, 0.9);
 
-    text-shadow:
-       0 0 8px rgba(192, 132, 252, 0.45);
+    h1 {
+        font-size:
+            clamp(
+                0.9rem,
+                6.5vw,
+                1.8rem
+            );
 
-    pointer-events: none;
+        letter-spacing: 0.5px;
 
-    white-space: nowrap;
+        gap: 3px;
+    }
+
+
+    .subtitle {
+        font-size:
+            0.48rem;
+
+        letter-spacing: 2px;
+    }
+
+
+    .nifraths {
+        right: 12px;
+
+        font-size: 8px;
+
+        letter-spacing: 1.5px;
+    }
+}
+
+
+/* ================================
+   PREVENT HORIZONTAL OVERFLOW
+================================ */
+
+body,
+.welcome,
+h1,
+h1 span,
+.subtitle {
+    max-width: 100vw;
 }
