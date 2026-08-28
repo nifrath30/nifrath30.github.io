@@ -1,4 +1,3 @@
-```javascript
 // ============================================================
 // ANIME RUNNER
 // Supabase Auth + Player Data + Game
