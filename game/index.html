@@ -61,7 +61,7 @@
 
 
     <!-- =====================================================
-         NAME SCREEN
+         ACCOUNT SCREEN
     ====================================================== -->
 
     <section
@@ -75,21 +75,49 @@
                 IDENTITY
             </p>
 
-            <h2>
+            <h2 id="accountTitle">
                 ENTER YOUR NAME
             </h2>
+
+
+            <!-- USERNAME -->
 
             <input
                 type="text"
                 id="playerName"
                 maxlength="16"
-                placeholder="Your name..."
-                autocomplete="off"
+                placeholder="Username..."
+                autocomplete="username"
             >
+
+
+            <!-- EMAIL -->
+
+            <input
+                type="email"
+                id="playerEmail"
+                maxlength="120"
+                placeholder="Email..."
+                autocomplete="email"
+            >
+
+
+            <!-- PASSWORD -->
+
+            <input
+                type="password"
+                id="playerPassword"
+                minlength="6"
+                maxlength="72"
+                placeholder="Password..."
+                autocomplete="current-password"
+            >
+
 
             <button id="nameButton">
                 CONTINUE
             </button>
+
 
             <p id="nameError"></p>
 
@@ -192,7 +220,7 @@
 
 
     <!-- =====================================================
-         SURPRISE / GAME OVER
+         GAME OVER
     ====================================================== -->
 
     <section
@@ -257,11 +285,12 @@
 </div>
 
 
-<!-- =====================================================
+<!-- =========================================================
      SUPABASE
-====================================================== -->
+========================================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 
 <script>
 
@@ -274,12 +303,7 @@
 </script>
 
 
-<!-- =====================================================
-     GAME JAVASCRIPT
-====================================================== -->
-
 <script src="game.js"></script>
-
 
 </body>
 

@@ -1,5 +1,6 @@
+```javascript
 // ============================================================
-// ANIME RUNNER - SUPABASE FIXED VERSION
+// ANIME RUNNER - AUTHENTICATION + GAME
 // ============================================================
 
 
@@ -16,14 +17,18 @@ if (
     window.SUPABASE_KEY &&
     typeof window.supabase !== "undefined"
 ) {
+
     try {
 
-        supabaseClient = window.supabase.createClient(
-            window.SUPABASE_URL,
-            window.SUPABASE_KEY
-        );
+        supabaseClient =
+            window.supabase.createClient(
+                window.SUPABASE_URL,
+                window.SUPABASE_KEY
+            );
 
-        console.log("Supabase client initialized.");
+        console.log(
+            "Supabase client initialized."
+        );
 
     } catch (error) {
 
@@ -77,6 +82,12 @@ const retryButton =
 const playerNameInput =
     document.getElementById("playerName");
 
+const playerEmailInput =
+    document.getElementById("playerEmail");
+
+const playerPasswordInput =
+    document.getElementById("playerPassword");
+
 const nameError =
     document.getElementById("nameError");
 
@@ -108,6 +119,10 @@ const resultHighScore =
     document.getElementById("resultHighScore");
 
 
+// ============================================================
+// CANVAS
+// ============================================================
+
 const canvas =
     document.getElementById("gameCanvas");
 
@@ -116,7 +131,7 @@ const ctx =
 
 
 // ============================================================
-// PLAYER DATA
+// ACCOUNT DATA
 // ============================================================
 
 let playerName = "";
@@ -125,17 +140,23 @@ let highScore = 0;
 
 let playerId = null;
 
+let currentUser = null;
+
 
 // ============================================================
-// SCREEN FUNCTION
+// SCREEN
 // ============================================================
 
 function showScreen(screen) {
 
-    document.querySelectorAll(".screen").forEach(
+    document.querySelectorAll(
+        ".screen"
+    ).forEach(
         function (element) {
 
-            element.classList.remove("active");
+            element.classList.remove(
+                "active"
+            );
 
         }
     );
@@ -143,23 +164,20 @@ function showScreen(screen) {
 
     if (screen) {
 
-        screen.classList.add("active");
-
+        screen.classList.add(
+            "active"
+        );
     }
 }
 
 
 // ============================================================
-// FIND PLAYER IN SUPABASE
+// GET CURRENT SESSION
 // ============================================================
 
-async function getPlayerFromDatabase(name) {
+async function getCurrentSession() {
 
     if (!supabaseClient) {
-
-        console.error(
-            "Supabase client is not available."
-        );
 
         return null;
     }
@@ -167,19 +185,75 @@ async function getPlayerFromDatabase(name) {
 
     try {
 
-        const { data, error } =
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.getSession();
+
+
+        if (error) {
+
+            console.error(
+                "Session error:",
+                error
+            );
+
+            return null;
+        }
+
+
+        return data.session || null;
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected session error:",
+            error
+        );
+
+        return null;
+    }
+}
+
+
+// ============================================================
+// GET PLAYER ROW
+// ============================================================
+
+async function getPlayerForUser(userId) {
+
+    if (
+        !supabaseClient ||
+        !userId
+    ) {
+
+        return null;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
             await supabaseClient
                 .from("players")
-                .select("id,name,highscore")
-                .eq("name", name)
-                .limit(1)
+                .select(
+                    "id,name,highscore,user_id"
+                )
+                .eq(
+                    "user_id",
+                    userId
+                )
                 .maybeSingle();
 
 
         if (error) {
 
             console.error(
-                "========== SUPABASE FIND PLAYER ERROR =========="
+                "========== PLAYER LOAD ERROR =========="
             );
 
             console.error(
@@ -203,12 +277,7 @@ async function getPlayerFromDatabase(name) {
             );
 
             console.error(
-                "Full error:",
-                error
-            );
-
-            console.error(
-                "================================================"
+                "========================================"
             );
 
             return null;
@@ -220,7 +289,7 @@ async function getPlayerFromDatabase(name) {
     } catch (error) {
 
         console.error(
-            "Unexpected error finding player:",
+            "Unexpected player load error:",
             error
         );
 
@@ -230,16 +299,18 @@ async function getPlayerFromDatabase(name) {
 
 
 // ============================================================
-// CREATE PLAYER IN SUPABASE
+// CREATE PLAYER ROW
 // ============================================================
 
-async function createPlayerInDatabase(name) {
+async function createPlayerRow(
+    userId,
+    username
+) {
 
-    if (!supabaseClient) {
-
-        console.error(
-            "Supabase client is not available."
-        );
+    if (
+        !supabaseClient ||
+        !userId
+    ) {
 
         return null;
     }
@@ -247,24 +318,34 @@ async function createPlayerInDatabase(name) {
 
     try {
 
-        const { data, error } =
+        const {
+            data,
+            error
+        } =
             await supabaseClient
                 .from("players")
                 .insert({
 
-                    name: name,
+                    user_id:
+                        userId,
 
-                    highscore: 0
+                    name:
+                        username,
+
+                    highscore:
+                        0
 
                 })
-                .select("id,name,highscore")
+                .select(
+                    "id,name,highscore,user_id"
+                )
                 .single();
 
 
         if (error) {
 
             console.error(
-                "========== SUPABASE CREATE PLAYER ERROR =========="
+                "========== PLAYER CREATE ERROR =========="
             );
 
             console.error(
@@ -288,22 +369,11 @@ async function createPlayerInDatabase(name) {
             );
 
             console.error(
-                "Full error:",
-                error
-            );
-
-            console.error(
-                "=================================================="
+                "=========================================="
             );
 
             return null;
         }
-
-
-        console.log(
-            "Player successfully created:",
-            data
-        );
 
 
         return data || null;
@@ -311,7 +381,7 @@ async function createPlayerInDatabase(name) {
     } catch (error) {
 
         console.error(
-            "Unexpected error creating player:",
+            "Unexpected player creation error:",
             error
         );
 
@@ -321,87 +391,53 @@ async function createPlayerInDatabase(name) {
 
 
 // ============================================================
-// LOAD OR CREATE PLAYER
+// LOAD PLAYER DATA
 // ============================================================
 
-async function loadOrCreatePlayer(name) {
+async function loadPlayerData() {
 
-    if (!supabaseClient) {
+    const session =
+        await getCurrentSession();
 
-        nameError.textContent =
-            "DATABASE CONNECTION FAILED";
+
+    if (!session) {
 
         return false;
     }
 
 
-    nameError.textContent =
-        "CONNECTING...";
+    currentUser =
+        session.user;
 
 
-    // --------------------------------------------------------
-    // LOOK FOR EXISTING PLAYER
-    // --------------------------------------------------------
-
-    const existingPlayer =
-        await getPlayerFromDatabase(name);
-
-
-    if (existingPlayer) {
-
-        playerId =
-            existingPlayer.id;
-
-        playerName =
-            existingPlayer.name;
-
-        highScore =
-            Number(existingPlayer.highscore) || 0;
-
-
-        nameError.textContent =
-            "";
-
-
-        console.log(
-            "Existing player loaded:",
-            existingPlayer
+    const player =
+        await getPlayerForUser(
+            currentUser.id
         );
 
 
-        return true;
-    }
+    if (!player) {
 
-
-    // --------------------------------------------------------
-    // CREATE NEW PLAYER
-    // --------------------------------------------------------
-
-    const newPlayer =
-        await createPlayerInDatabase(name);
-
-
-    if (!newPlayer) {
-
-        nameError.textContent =
-            "COULD NOT SAVE PLAYER. PLEASE TRY AGAIN.";
+        console.warn(
+            "Authenticated user has no player row yet."
+        );
 
         return false;
     }
 
 
     playerId =
-        newPlayer.id;
+        player.id;
+
 
     playerName =
-        newPlayer.name;
+        player.name;
+
 
     highScore =
-        Number(newPlayer.highscore) || 0;
-
-
-    nameError.textContent =
-        "";
+        Number(
+            player.highscore
+        ) || 0;
 
 
     return true;
@@ -412,7 +448,9 @@ async function loadOrCreatePlayer(name) {
 // UPDATE HIGH SCORE
 // ============================================================
 
-async function updateHighScoreInDatabase(newScore) {
+async function updateHighScoreInDatabase(
+    newScore
+) {
 
     if (
         !supabaseClient ||
@@ -420,7 +458,7 @@ async function updateHighScoreInDatabase(newScore) {
     ) {
 
         console.error(
-            "Cannot update high score: missing Supabase client or player ID."
+            "Cannot update high score."
         );
 
         return false;
@@ -429,21 +467,27 @@ async function updateHighScoreInDatabase(newScore) {
 
     try {
 
-        const { error } =
+        const {
+            error
+        } =
             await supabaseClient
                 .from("players")
                 .update({
 
-                    highscore: newScore
+                    highscore:
+                        newScore
 
                 })
-                .eq("id", playerId);
+                .eq(
+                    "id",
+                    playerId
+                );
 
 
         if (error) {
 
             console.error(
-                "========== SUPABASE HIGH SCORE ERROR =========="
+                "========== HIGH SCORE UPDATE ERROR =========="
             );
 
             console.error(
@@ -467,12 +511,7 @@ async function updateHighScoreInDatabase(newScore) {
             );
 
             console.error(
-                "Full error:",
-                error
-            );
-
-            console.error(
-                "================================================"
+                "============================================="
             );
 
             return false;
@@ -490,12 +529,434 @@ async function updateHighScoreInDatabase(newScore) {
     } catch (error) {
 
         console.error(
-            "Unexpected high-score error:",
+            "Unexpected high score error:",
             error
         );
 
         return false;
     }
+}
+
+
+// ============================================================
+// REGISTER NEW ACCOUNT
+// ============================================================
+
+async function registerNewAccount(
+    username,
+    email,
+    password
+) {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.signUp({
+
+                email:
+                    email,
+
+                password:
+                    password
+
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Signup error:",
+                error
+            );
+
+            nameError.textContent =
+                error.message;
+
+            return false;
+        }
+
+
+        if (!data.user) {
+
+            nameError.textContent =
+                "ACCOUNT COULD NOT BE CREATED.";
+
+            return false;
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        /*
+         * If email confirmation is required,
+         * session may be null here.
+         */
+
+        if (!data.session) {
+
+            nameError.textContent =
+                "CHECK YOUR EMAIL TO CONFIRM YOUR ACCOUNT, THEN LOG IN.";
+
+            return false;
+        }
+
+
+        const newPlayer =
+            await createPlayerRow(
+                data.user.id,
+                username
+            );
+
+
+        if (!newPlayer) {
+
+            nameError.textContent =
+                "ACCOUNT CREATED, BUT PLAYER DATA COULD NOT BE SAVED.";
+
+            return false;
+        }
+
+
+        playerId =
+            newPlayer.id;
+
+
+        playerName =
+            newPlayer.name;
+
+
+        highScore =
+            Number(
+                newPlayer.highscore
+            ) || 0;
+
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected signup error:",
+            error
+        );
+
+        nameError.textContent =
+            "ACCOUNT CREATION FAILED.";
+
+        return false;
+    }
+}
+
+
+// ============================================================
+// LOGIN EXISTING ACCOUNT
+// ============================================================
+
+async function loginExistingAccount(
+    email,
+    password,
+    username
+) {
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth.signInWithPassword({
+
+                email:
+                    email,
+
+                password:
+                    password
+
+            });
+
+
+        if (error) {
+
+            console.error(
+                "Login error:",
+                error
+            );
+
+            nameError.textContent =
+                "WRONG EMAIL OR PASSWORD.";
+
+            return false;
+        }
+
+
+        if (!data.user) {
+
+            nameError.textContent =
+                "LOGIN FAILED.";
+
+            return false;
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        let player =
+            await getPlayerForUser(
+                data.user.id
+            );
+
+
+        /*
+         * If the authenticated account doesn't
+         * have a player row yet, create one.
+         */
+
+        if (!player) {
+
+            player =
+                await createPlayerRow(
+                    data.user.id,
+                    username
+                );
+        }
+
+
+        if (!player) {
+
+            nameError.textContent =
+                "PLAYER DATA COULD NOT BE LOADED.";
+
+            return false;
+        }
+
+
+        playerId =
+            player.id;
+
+
+        playerName =
+            player.name;
+
+
+        highScore =
+            Number(
+                player.highscore
+            ) || 0;
+
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Unexpected login error:",
+            error
+        );
+
+        nameError.textContent =
+            "LOGIN FAILED.";
+
+        return false;
+    }
+}
+
+
+// ============================================================
+// CONTINUE / ACCOUNT BUTTON
+// ============================================================
+
+async function registerPlayer() {
+
+    if (
+        !supabaseClient
+    ) {
+
+        nameError.textContent =
+            "DATABASE CONNECTION FAILED.";
+
+        return;
+    }
+
+
+    const username =
+        playerNameInput.value.trim();
+
+
+    const email =
+        playerEmailInput.value.trim();
+
+
+    const password =
+        playerPasswordInput.value;
+
+
+    // --------------------------------------------------------
+    // USERNAME
+    // --------------------------------------------------------
+
+    if (username === "") {
+
+        nameError.textContent =
+            "PLEASE ENTER YOUR USERNAME.";
+
+        playerNameInput.focus();
+
+        return;
+    }
+
+
+    if (username.length < 2) {
+
+        nameError.textContent =
+            "USERNAME MUST HAVE AT LEAST 2 CHARACTERS.";
+
+        playerNameInput.focus();
+
+        return;
+    }
+
+
+    if (username.length > 16) {
+
+        nameError.textContent =
+            "USERNAME MUST BE 16 CHARACTERS OR LESS.";
+
+        playerNameInput.focus();
+
+        return;
+    }
+
+
+    const validName =
+        /^[a-zA-Z0-9 _-]+$/;
+
+
+    if (!validName.test(username)) {
+
+        nameError.textContent =
+            "USE LETTERS, NUMBERS, SPACES, _ OR - ONLY.";
+
+        playerNameInput.focus();
+
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // EMAIL
+    // --------------------------------------------------------
+
+    if (email === "") {
+
+        nameError.textContent =
+            "PLEASE ENTER YOUR EMAIL.";
+
+        playerEmailInput.focus();
+
+        return;
+    }
+
+
+    // --------------------------------------------------------
+    // PASSWORD
+    // --------------------------------------------------------
+
+    if (password.length < 6) {
+
+        nameError.textContent =
+            "PASSWORD MUST HAVE AT LEAST 6 CHARACTERS.";
+
+        playerPasswordInput.focus();
+
+        return;
+    }
+
+
+    nameButton.disabled =
+        true;
+
+
+    nameButton.textContent =
+        "CONNECTING...";
+
+
+    nameError.textContent =
+        "";
+
+
+    /*
+     * Check whether this email already has
+     * an account.
+     *
+     * Supabase does not allow us to directly
+     * search Auth users from the browser.
+     *
+     * We therefore try login first.
+     */
+
+    const loginResult =
+        await loginExistingAccount(
+            email,
+            password,
+            username
+        );
+
+
+    if (loginResult) {
+
+        nameButton.disabled =
+            false;
+
+        nameButton.textContent =
+            "CONTINUE";
+
+
+        showLobby();
+
+        return;
+    }
+
+
+    /*
+     * Login failed.
+     *
+     * Try creating a new account.
+     */
+
+    nameError.textContent =
+        "CREATING ACCOUNT...";
+
+
+    const signupResult =
+        await registerNewAccount(
+            username,
+            email,
+            password
+        );
+
+
+    nameButton.disabled =
+        false;
+
+
+    nameButton.textContent =
+        "CONTINUE";
+
+
+    if (!signupResult) {
+
+        return;
+    }
+
+
+    showLobby();
 }
 
 
@@ -506,19 +967,63 @@ async function updateHighScoreInDatabase(newScore) {
 if (startIntroButton) {
 
     startIntroButton.onclick =
-        function () {
+        async function () {
 
-            showScreen(
-                nameScreen
-            );
+            startIntroButton.disabled =
+                true;
 
+
+            /*
+             * First check whether this device
+             * already has a Supabase session.
+             */
+
+            const loaded =
+                await loadPlayerData();
+
+
+            startIntroButton.disabled =
+                false;
+
+
+            if (loaded) {
+
+                /*
+                 * Existing session:
+                 *
+                 * No password required.
+                 */
+
+                showLobby();
+
+                return;
+            }
+
+
+            /*
+             * No session:
+             * show login/account screen.
+             */
 
             playerNameInput.value =
                 "";
 
 
+            playerEmailInput.value =
+                "";
+
+
+            playerPasswordInput.value =
+                "";
+
+
             nameError.textContent =
                 "";
+
+
+            showScreen(
+                nameScreen
+            );
 
 
             setTimeout(
@@ -552,9 +1057,9 @@ if (nameButton) {
 // ENTER KEY
 // ============================================================
 
-if (playerNameInput) {
+if (playerPasswordInput) {
 
-    playerNameInput.addEventListener(
+    playerPasswordInput.addEventListener(
         "keydown",
         function (event) {
 
@@ -565,163 +1070,6 @@ if (playerNameInput) {
                 registerPlayer();
             }
         }
-    );
-}
-
-
-// ============================================================
-// REGISTER PLAYER
-// ============================================================
-
-async function registerPlayer() {
-
-    if (nameButton.disabled) {
-
-        return;
-    }
-
-
-    const enteredName =
-        playerNameInput.value.trim();
-
-
-    // --------------------------------------------------------
-    // EMPTY NAME
-    // --------------------------------------------------------
-
-    if (enteredName === "") {
-
-        nameError.textContent =
-            "PLEASE ENTER YOUR NAME";
-
-        playerNameInput.focus();
-
-        return;
-    }
-
-
-    // --------------------------------------------------------
-    // MINIMUM LENGTH
-    // --------------------------------------------------------
-
-    if (enteredName.length < 2) {
-
-        nameError.textContent =
-            "NAME MUST HAVE AT LEAST 2 CHARACTERS";
-
-        playerNameInput.focus();
-
-        return;
-    }
-
-
-    // --------------------------------------------------------
-    // MAXIMUM LENGTH
-    // --------------------------------------------------------
-
-    if (enteredName.length > 16) {
-
-        nameError.textContent =
-            "NAME MUST BE 16 CHARACTERS OR LESS";
-
-        playerNameInput.focus();
-
-        return;
-    }
-
-
-    // --------------------------------------------------------
-    // VALID CHARACTERS
-    // --------------------------------------------------------
-
-    const validName =
-        /^[a-zA-Z0-9 _-]+$/;
-
-
-    if (!validName.test(enteredName)) {
-
-        nameError.textContent =
-            "USE LETTERS, NUMBERS, SPACES, _ OR - ONLY";
-
-        playerNameInput.focus();
-
-        return;
-    }
-
-
-    // --------------------------------------------------------
-    // CONNECT TO DATABASE
-    // --------------------------------------------------------
-
-    nameButton.disabled =
-        true;
-
-
-    nameButton.textContent =
-        "CONNECTING...";
-
-
-    const success =
-        await loadOrCreatePlayer(
-            enteredName
-        );
-
-
-    nameButton.disabled =
-        false;
-
-
-    nameButton.textContent =
-        "CONTINUE";
-
-
-    if (!success) {
-
-        return;
-    }
-
-
-    showLobby();
-}
-
-
-// ============================================================
-// SHOW LOBBY
-// ============================================================
-
-function showLobby() {
-
-    welcomeText.textContent =
-        playerName;
-
-
-    gamePlayerName.textContent =
-        playerName;
-
-
-    if (highScore > 0) {
-
-        welcomeLabel.textContent =
-            "WELCOME BACK";
-
-
-        savedHighScore.textContent =
-            "HIGH SCORE: " +
-            highScore;
-
-    } else {
-
-        welcomeLabel.textContent =
-            "WELCOME";
-
-
-        savedHighScore.textContent =
-            "HIGH SCORE: 0";
-    }
-
-
-    showScreen(
-        lobbyScreen
     );
 }
 
@@ -760,26 +1108,36 @@ if (retryButton) {
 // GAME VARIABLES
 // ============================================================
 
-let gameRunning = false;
+let gameRunning =
+    false;
 
-let gameAnimationId = null;
+let gameAnimationId =
+    null;
 
-let lastTime = 0;
+let lastTime =
+    0;
 
-let elapsedTime = 0;
+let elapsedTime =
+    0;
 
-let score = 0;
+let score =
+    0;
 
-let groundY = 0;
+let groundY =
+    0;
 
-let currentSpeed = 360;
+let currentSpeed =
+    360;
 
 
-const BASE_SPEED = 360;
+const BASE_SPEED =
+    360;
 
-const MAX_SPEED = 620;
+const MAX_SPEED =
+    620;
 
-const SPEED_INCREASE = 3.2;
+const SPEED_INCREASE =
+    3.2;
 
 
 // ============================================================
@@ -824,14 +1182,15 @@ playerSprite.src =
     "assets/character-run.png";
 
 
-let spriteLoaded = false;
+let spriteLoaded =
+    false;
 
 
 playerSprite.onload =
     function () {
 
-        spriteLoaded = true;
-
+        spriteLoaded =
+            true;
     };
 
 
@@ -841,24 +1200,28 @@ playerSprite.onerror =
         console.warn(
             "character-run.png could not be loaded."
         );
-
     };
 
 
-const FRAME_COUNT = 8;
+const FRAME_COUNT =
+    8;
 
-const SPRITE_SOURCE_Y = 280;
+const SPRITE_SOURCE_Y =
+    280;
 
-const SPRITE_SOURCE_HEIGHT = 350;
+const SPRITE_SOURCE_HEIGHT =
+    350;
 
 
 // ============================================================
 // OBSTACLES
 // ============================================================
 
-let obstacles = [];
+let obstacles =
+    [];
 
-let distanceToNextObstacle = 0;
+let distanceToNextObstacle =
+    0;
 
 
 // ============================================================
@@ -869,7 +1232,8 @@ function randomObstacleDistance() {
 
     return (
         420 +
-        Math.random() * 520
+        Math.random() *
+        520
     );
 }
 
@@ -890,7 +1254,9 @@ function startGame() {
     }
 
 
-    if (gameAnimationId !== null) {
+    if (
+        gameAnimationId !== null
+    ) {
 
         cancelAnimationFrame(
             gameAnimationId
@@ -1144,7 +1510,11 @@ window.addEventListener(
 
         if (
             document.activeElement ===
-            playerNameInput
+            playerNameInput ||
+            document.activeElement ===
+            playerEmailInput ||
+            document.activeElement ===
+            playerPasswordInput
         ) {
 
             return;
@@ -1232,12 +1602,14 @@ function createObstacle() {
 
     const width =
         45 +
-        Math.random() * 20;
+        Math.random() *
+        20;
 
 
     const height =
         50 +
-        Math.random() * 30;
+        Math.random() *
+        30;
 
 
     obstacles.push({
@@ -1390,7 +1762,9 @@ function gameOver() {
         false;
 
 
-    if (gameAnimationId !== null) {
+    if (
+        gameAnimationId !== null
+    ) {
 
         cancelAnimationFrame(
             gameAnimationId
@@ -1415,6 +1789,13 @@ function gameOver() {
         highScore =
             score;
 
+
+        /*
+         * Save to Supabase.
+         *
+         * RLS ensures this update can only
+         * affect the logged-in user's row.
+         */
 
         updateHighScoreInDatabase(
             highScore
@@ -2128,6 +2509,34 @@ window.addEventListener(
 
 
 // ============================================================
+// AUTH STATE LISTENER
+// ============================================================
+
+if (supabaseClient) {
+
+    supabaseClient.auth.onAuthStateChange(
+        function (
+            event,
+            session
+        ) {
+
+            console.log(
+                "Auth event:",
+                event
+            );
+
+
+            if (session) {
+
+                currentUser =
+                    session.user;
+            }
+        }
+    );
+}
+
+
+// ============================================================
 // INITIALIZATION
 // ============================================================
 
@@ -2136,3 +2545,4 @@ resizeCanvas();
 showScreen(
     introScreen
 );
+```
