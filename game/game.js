@@ -7,6 +7,7 @@
 // SUPABASE
 // ============================================================
 
+
 const SUPABASE_URL = window.SUPABASE_URL;
 const SUPABASE_KEY = window.SUPABASE_KEY;
 
