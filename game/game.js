@@ -1,65 +1,23 @@
-```javascript
-console.log("GAME.JS FILE STARTED");
-
-
 // ============================================================
 // ANIME RUNNER
-// Supabase Auth + Player Data + Game
+// Simple Game Version
+// No accounts / No Supabase / No saved player data
 // ============================================================
 
-
-// ============================================================
-// SUPABASE
-// ============================================================
-
-const SUPABASE_URL = window.SUPABASE_URL;
-const SUPABASE_KEY = window.SUPABASE_KEY;
-
-let supabaseClient = null;
-
-if (
-    window.supabase &&
-    SUPABASE_URL &&
-    SUPABASE_KEY
-) {
-    supabaseClient = window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-    );
-
-    console.log("Supabase initialized.");
-} else {
-    console.error(
-        "Supabase could not be initialized. Check the Supabase script and keys."
-    );
-}
+console.log("GAME.JS FILE STARTED");
 
 
 // ============================================================
 // ELEMENTS
 // ============================================================
 
-const introScreen =
-    document.getElementById("introScreen");
-
-const nameScreen =
-    document.getElementById("nameScreen");
-
-const lobbyScreen =
-    document.getElementById("lobbyScreen");
-
-const gameScreen =
-    document.getElementById("gameScreen");
-
-const surpriseScreen =
-    document.getElementById("surpriseScreen");
-
+const introScreen = document.getElementById("introScreen");
+const lobbyScreen = document.getElementById("lobbyScreen");
+const gameScreen = document.getElementById("gameScreen");
+const surpriseScreen = document.getElementById("surpriseScreen");
 
 const startIntroButton =
     document.getElementById("startIntroButton");
-
-const nameButton =
-    document.getElementById("nameButton");
 
 const playButton =
     document.getElementById("playButton");
@@ -67,37 +25,8 @@ const playButton =
 const retryButton =
     document.getElementById("retryButton");
 
-
-const playerNameInput =
-    document.getElementById("playerName");
-
-const playerEmailInput =
-    document.getElementById("playerEmail");
-
-const playerPasswordInput =
-    document.getElementById("playerPassword");
-
-
-const nameError =
-    document.getElementById("nameError");
-
-
-const welcomeText =
-    document.getElementById("welcomeText");
-
-const welcomeLabel =
-    document.getElementById("welcomeLabel");
-
-const savedHighScore =
-    document.getElementById("savedHighScore");
-
-
-const gamePlayerName =
-    document.getElementById("gamePlayerName");
-
 const scoreElement =
     document.getElementById("score");
-
 
 const resultPanel =
     document.getElementById("resultPanel");
@@ -108,70 +37,36 @@ const resultScore =
 const resultHighScore =
     document.getElementById("resultHighScore");
 
-
 const canvas =
     document.getElementById("gameCanvas");
 
-let ctx = null;
 
-if (canvas) {
-    ctx = canvas.getContext("2d");
+// ============================================================
+// SAFETY CHECK
+// ============================================================
+
+if (!canvas) {
+
+    console.error(
+        "ERROR: gameCanvas was not found."
+    );
+
+} else {
+
+    console.log(
+        "gameCanvas found."
+    );
 }
 
 
-// ============================================================
-// CHECK HTML
-// ============================================================
-
-console.log("HTML elements:");
-
-console.log(
-    "BEGIN:",
-    !!startIntroButton
-);
-
-console.log(
-    "NAME SCREEN:",
-    !!nameScreen
-);
-
-console.log(
-    "NAME INPUT:",
-    !!playerNameInput
-);
-
-console.log(
-    "EMAIL INPUT:",
-    !!playerEmailInput
-);
-
-console.log(
-    "PASSWORD INPUT:",
-    !!playerPasswordInput
-);
-
-console.log(
-    "CANVAS:",
-    !!canvas
-);
+const ctx =
+    canvas
+        ? canvas.getContext("2d")
+        : null;
 
 
 // ============================================================
-// PLAYER DATA
-// ============================================================
-
-const PLAYER_STORAGE_KEY =
-    "animeRunnerPlayer";
-
-let playerName = "";
-
-let highScore = 0;
-
-let currentUser = null;
-
-
-// ============================================================
-// SCREEN
+// SCREEN SYSTEM
 // ============================================================
 
 function showScreen(screen) {
@@ -179,7 +74,7 @@ function showScreen(screen) {
     if (!screen) {
 
         console.error(
-            "Cannot show screen because element is missing."
+            "Screen element not found."
         );
 
         return;
@@ -188,848 +83,101 @@ function showScreen(screen) {
 
     document
         .querySelectorAll(".screen")
-        .forEach(function (element) {
-
-            element.classList.remove("active");
-
-        });
-
-
-    screen.classList.add("active");
-}
-
-
-// ============================================================
-// ERROR
-// ============================================================
-
-function showAccountError(message) {
-
-    if (nameError) {
-
-        nameError.textContent =
-            message;
-    }
-
-
-    console.error(
-        "ACCOUNT:",
-        message
-    );
-}
-
-
-function clearAccountError() {
-
-    if (nameError) {
-
-        nameError.textContent =
-            "";
-    }
-}
-
-
-// ============================================================
-// LOCAL PLAYER
-// ============================================================
-
-function saveLocalPlayer() {
-
-    try {
-
-        localStorage.setItem(
-
-            PLAYER_STORAGE_KEY,
-
-            JSON.stringify({
-
-                name:
-                    playerName,
-
-                highScore:
-                    highScore
-
-            })
-
-        );
-
-    } catch (error) {
-
-        console.error(
-            "Local storage error:",
-            error
-        );
-    }
-}
-
-
-// ============================================================
-// LOAD PLAYER FROM DATABASE
-// ============================================================
-
-async function loadPlayerFromDatabase(userId) {
-
-    if (!supabaseClient) {
-        return false;
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("players")
-                .select(
-                    "id,user_id,name,highscore"
-                )
-                .eq(
-                    "user_id",
-                    userId
-                )
-                .maybeSingle();
-
-
-        if (error) {
-
-            console.error(
-                "Player loading error:",
-                error
-            );
-
-            return false;
-        }
-
-
-        if (!data) {
-
-            console.log(
-                "No player row found."
-            );
-
-            return false;
-        }
-
-
-        playerName =
-            data.name || "";
-
-
-        highScore =
-            Number(
-                data.highscore
-            ) || 0;
-
-
-        saveLocalPlayer();
-
-
-        console.log(
-            "Player loaded:",
-            playerName,
-            highScore
-        );
-
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Player loading exception:",
-            error
-        );
-
-        return false;
-    }
-}
-
-
-// ============================================================
-// FIND PLAYER
-// ============================================================
-
-async function findPlayerByUserId(userId) {
-
-    if (!supabaseClient) {
-        return null;
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("players")
-                .select(
-                    "id,user_id,name,highscore"
-                )
-                .eq(
-                    "user_id",
-                    userId
-                )
-                .maybeSingle();
-
-
-        if (error) {
-
-            console.error(
-                "Find player error:",
-                error
-            );
-
-            return null;
-        }
-
-
-        return data;
-
-    } catch (error) {
-
-        console.error(
-            "Find player exception:",
-            error
-        );
-
-        return null;
-    }
-}
-
-
-// ============================================================
-// CREATE PLAYER ROW
-// ============================================================
-
-async function createPlayerRow(
-    userId,
-    username
-) {
-
-    if (!supabaseClient) {
-
-        showAccountError(
-            "SUPABASE IS NOT CONNECTED."
-        );
-
-        return false;
-    }
-
-
-    try {
-
-        console.log(
-            "Creating player row..."
-        );
-
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .from("players")
-                .insert({
-
-                    user_id:
-                        userId,
-
-                    name:
-                        username,
-
-                    highscore:
-                        0
-
-                })
-                .select()
-                .single();
-
-
-        if (error) {
-
-            console.error(
-                "Create player error:",
-                error
-            );
-
-            return false;
-        }
-
-
-        console.log(
-            "Player row created:",
-            data
-        );
-
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Create player exception:",
-            error
-        );
-
-        return false;
-    }
-}
-
-
-// ============================================================
-// EXISTING SESSION
-// ============================================================
-
-async function loadExistingSession() {
-
-    if (!supabaseClient) {
-        return false;
-    }
-
-
-    try {
-
-        const {
-            data,
-            error
-        } =
-            await supabaseClient
-                .auth
-                .getSession();
-
-
-        if (error) {
-
-            console.error(
-                "Session error:",
-                error
-            );
-
-            return false;
-        }
-
-
-        if (
-            !data ||
-            !data.session ||
-            !data.session.user
-        ) {
-
-            return false;
-        }
-
-
-        currentUser =
-            data.session.user;
-
-
-        console.log(
-            "Existing session:",
-            currentUser.id
-        );
-
-
-        await loadPlayerFromDatabase(
-            currentUser.id
-        );
-
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "Session exception:",
-            error
-        );
-
-        return false;
-    }
-}
-
-
-// ============================================================
-// ACCOUNT LOGIN / SIGNUP
-// ============================================================
-
-async function createOrLoginAccount() {
-
-    clearAccountError();
-
-
-    if (!supabaseClient) {
-
-        showAccountError(
-            "SUPABASE IS NOT CONNECTED."
-        );
-
-        return;
-    }
-
-
-    const username =
-        playerNameInput.value.trim();
-
-
-    const email =
-        playerEmailInput.value.trim();
-
-
-    const password =
-        playerPasswordInput.value;
-
-
-    // ========================================================
-    // USERNAME
-    // ========================================================
-
-    if (username.length < 2) {
-
-        showAccountError(
-            "PLEASE ENTER A USERNAME WITH AT LEAST 2 CHARACTERS."
-        );
-
-        playerNameInput.focus();
-
-        return;
-    }
-
-
-    if (username.length > 16) {
-
-        showAccountError(
-            "USERNAME MUST BE 16 CHARACTERS OR LESS."
-        );
-
-        playerNameInput.focus();
-
-        return;
-    }
-
-
-    if (!/^[a-zA-Z0-9 _-]+$/.test(username)) {
-
-        showAccountError(
-            "USE LETTERS, NUMBERS, SPACES, _ OR - ONLY."
-        );
-
-        playerNameInput.focus();
-
-        return;
-    }
-
-
-    // ========================================================
-    // EMAIL
-    // ========================================================
-
-    if (
-        !email ||
-        !email.includes("@")
-    ) {
-
-        showAccountError(
-            "PLEASE ENTER A VALID EMAIL."
-        );
-
-        playerEmailInput.focus();
-
-        return;
-    }
-
-
-    // ========================================================
-    // PASSWORD
-    // ========================================================
-
-    if (password.length < 6) {
-
-        showAccountError(
-            "PASSWORD MUST HAVE AT LEAST 6 CHARACTERS."
-        );
-
-        playerPasswordInput.focus();
-
-        return;
-    }
-
-
-    nameButton.disabled = true;
-
-    nameButton.textContent =
-        "PLEASE WAIT...";
-
-
-    try {
-
-        // ====================================================
-        // TRY LOGIN FIRST
-        // ====================================================
-
-        console.log(
-            "Trying to log in..."
-        );
-
-
-        const {
-            data: loginData,
-            error: loginError
-        } =
-            await supabaseClient.auth.signInWithPassword({
-
-                email:
-                    email,
-
-                password:
-                    password
-
-            });
-
-
-        // ====================================================
-        // LOGIN SUCCESS
-        // ====================================================
-
-        if (
-            !loginError &&
-            loginData &&
-            loginData.user
-        ) {
-
-            currentUser =
-                loginData.user;
-
-
-            console.log(
-                "LOGIN SUCCESS:",
-                currentUser.id
-            );
-
-
-            let player =
-                await findPlayerByUserId(
-                    currentUser.id
+        .forEach(
+            function (element) {
+
+                element.classList.remove(
+                    "active"
                 );
-
-
-            if (player) {
-
-                playerName =
-                    player.name ||
-                    username;
-
-
-                highScore =
-                    Number(
-                        player.highscore
-                    ) || 0;
-
-
-                saveLocalPlayer();
-
-
-                showLobby();
-
-
-                return;
             }
-
-
-            // =================================================
-            // AUTH ACCOUNT EXISTS BUT PLAYER ROW DOESN'T
-            // =================================================
-
-            console.log(
-                "Creating missing player row..."
-            );
-
-
-            const created =
-                await createPlayerRow(
-
-                    currentUser.id,
-
-                    username
-
-                );
-
-
-            if (!created) {
-
-                showAccountError(
-                    "LOGIN WORKED, BUT PLAYER DATA COULD NOT BE CREATED."
-                );
-
-                return;
-            }
-
-
-            playerName =
-                username;
-
-
-            highScore =
-                0;
-
-
-            saveLocalPlayer();
-
-
-            showLobby();
-
-
-            return;
-        }
-
-
-        // ====================================================
-        // LOGIN FAILED
-        // ====================================================
-
-        console.log(
-            "Login failed:",
-            loginError
         );
 
 
-        if (loginError) {
-
-            const message =
-                (
-                    loginError.message ||
-                    ""
-                ).toLowerCase();
-
-
-            // ------------------------------------------------
-            // IMPORTANT:
-            // DO NOT SIGN UP WHEN PASSWORD IS WRONG.
-            // ------------------------------------------------
-
-            if (
-                message.includes(
-                    "invalid login credentials"
-                ) ||
-                message.includes(
-                    "invalid credentials"
-                ) ||
-                message.includes(
-                    "invalid email or password"
-                ) ||
-                message.includes(
-                    "invalid login"
-                )
-            ) {
-
-                showAccountError(
-                    "EMAIL OR PASSWORD IS INCORRECT."
-                );
-
-                return;
-            }
-
-
-            if (
-                message.includes(
-                    "email not confirmed"
-                )
-            ) {
-
-                showAccountError(
-                    "PLEASE CONFIRM YOUR EMAIL BEFORE LOGGING IN."
-                );
-
-                return;
-            }
-
-
-            // Other authentication errors should
-            // be shown instead of attempting signup.
-
-            showAccountError(
-                loginError.message ||
-                "LOGIN FAILED."
-            );
-
-            return;
-        }
-
-
-    } catch (error) {
-
-        console.error(
-            "Account operation error:",
-            error
-        );
-
-
-        showAccountError(
-            error.message ||
-            "SOMETHING WENT WRONG."
-        );
-
-    } finally {
-
-        nameButton.disabled =
-            false;
-
-        nameButton.textContent =
-            "CONTINUE";
-    }
-}
-
-
-// ============================================================
-// SHOW LOBBY
-// ============================================================
-
-function showLobby() {
-
-    if (welcomeText) {
-
-        welcomeText.textContent =
-            playerName;
-    }
-
-
-    if (gamePlayerName) {
-
-        gamePlayerName.textContent =
-            playerName;
-    }
-
-
-    if (highScore > 0) {
-
-        welcomeLabel.textContent =
-            "WELCOME BACK";
-
-
-        savedHighScore.textContent =
-            "HIGH SCORE: " +
-            highScore;
-
-    } else {
-
-        welcomeLabel.textContent =
-            "WELCOME";
-
-
-        savedHighScore.textContent =
-            "HIGH SCORE: 0";
-    }
-
-
-    showScreen(
-        lobbyScreen
+    screen.classList.add(
+        "active"
     );
 }
 
 
 // ============================================================
-// BEGIN BUTTON
-// ============================================================
-//
-// IMPORTANT:
-// BEGIN does NOT wait for Supabase.
-// It immediately opens the identity screen.
+// BEGIN / ENTER GAME 1
 // ============================================================
 
 if (startIntroButton) {
 
-    console.log(
-        "BEGIN BUTTON FOUND."
-    );
-
-
-    startIntroButton.onclick =
-        function (event) {
-
-            event.preventDefault();
-
+    startIntroButton.addEventListener(
+        "click",
+        function () {
 
             console.log(
-                "BEGIN BUTTON CLICKED."
+                "ENTER GAME 1 clicked."
             );
 
 
             showScreen(
-                nameScreen
+                lobbyScreen
             );
 
-
-            if (playerNameInput) {
-
-                setTimeout(
-                    function () {
-
-                        playerNameInput.focus();
-
-                    },
-                    100
-                );
-            }
-        };
+        }
+    );
 
 } else {
 
     console.error(
-        "BEGIN BUTTON NOT FOUND!"
+        "ENTER GAME 1 button not found."
     );
 }
 
 
 // ============================================================
-// CONTINUE BUTTON
+// CONTINUE
 // ============================================================
 
-if (nameButton) {
+if (playButton) {
 
-    nameButton.onclick =
-        function (event) {
+    playButton.addEventListener(
+        "click",
+        function () {
 
-            event.preventDefault();
-
-            createOrLoginAccount();
-
-        };
-}
+            console.log(
+                "CONTINUE clicked."
+            );
 
 
-// ============================================================
-// ENTER KEY
-// ============================================================
+            startGame();
 
-[
-    playerNameInput,
-    playerEmailInput,
-    playerPasswordInput
-].forEach(function (input) {
-
-    if (!input) {
-        return;
-    }
-
-
-    input.addEventListener(
-        "keydown",
-        function (event) {
-
-            if (
-                event.key === "Enter"
-            ) {
-
-                event.preventDefault();
-
-                createOrLoginAccount();
-            }
         }
     );
-});
+
+} else {
+
+    console.error(
+        "CONTINUE button not found."
+    );
+}
+
+
+// ============================================================
+// RETRY
+// ============================================================
+
+if (retryButton) {
+
+    retryButton.addEventListener(
+        "click",
+        function () {
+
+            console.log(
+                "RETRY clicked."
+            );
+
+
+            startGame();
+
+        }
+    );
+
+}
 
 
 // ============================================================
@@ -1049,7 +197,6 @@ let score = 0;
 let groundY = 0;
 
 let currentSpeed = 360;
-
 
 const BASE_SPEED = 360;
 
@@ -1085,17 +232,21 @@ const player = {
     frameTimer: 0,
 
     frameSpeed: 0.09
+
 };
 
 
 // ============================================================
-// CHARACTER SPRITE
+// PLAYER SPRITE
 // ============================================================
 
 const playerSprite =
     new Image();
 
 
+// IMPORTANT:
+// game.js is inside the "game" folder.
+// The sprite is inside "game/assets".
 playerSprite.src =
     "assets/character-run.png";
 
@@ -1109,22 +260,28 @@ playerSprite.onload =
         spriteLoaded = true;
 
         console.log(
-            "Character sprite loaded."
+            "Character sprite loaded successfully."
         );
+
     };
 
 
 playerSprite.onerror =
     function () {
 
-        console.warn(
-            "character-run.png could not be loaded."
+        spriteLoaded = false;
+
+        console.error(
+            "ERROR: character-run.png could not be loaded."
         );
+
     };
 
 
 const FRAME_COUNT = 8;
 
+
+// These values are based on your existing sprite.
 const SPRITE_SOURCE_Y = 280;
 
 const SPRITE_SOURCE_HEIGHT = 350;
@@ -1145,36 +302,7 @@ function randomObstacleDistance() {
         420 +
         Math.random() * 520
     );
-}
 
-
-// ============================================================
-// PLAY BUTTON
-// ============================================================
-
-if (playButton) {
-
-    playButton.onclick =
-        function () {
-
-            startGame();
-
-        };
-}
-
-
-// ============================================================
-// RETRY BUTTON
-// ============================================================
-
-if (retryButton) {
-
-    retryButton.onclick =
-        function () {
-
-            startGame();
-
-        };
 }
 
 
@@ -1184,65 +312,55 @@ if (retryButton) {
 
 function startGame() {
 
-    if (!playerName) {
+    if (!canvas || !ctx) {
 
-        showScreen(
-            nameScreen
+        console.error(
+            "Cannot start game: canvas is missing."
         );
 
         return;
     }
 
 
-    if (gameAnimationId !== null) {
+    // Stop previous animation.
+    if (
+        gameAnimationId !== null
+    ) {
 
         cancelAnimationFrame(
             gameAnimationId
         );
 
-        gameAnimationId =
-            null;
+        gameAnimationId = null;
+
     }
 
 
-    gameRunning =
-        true;
+    gameRunning = true;
 
 
-    elapsedTime =
-        0;
+    elapsedTime = 0;
 
-
-    score =
-        0;
-
+    score = 0;
 
     currentSpeed =
         BASE_SPEED;
 
 
-    obstacles =
-        [];
+    obstacles = [];
 
 
     distanceToNextObstacle =
         randomObstacleDistance();
 
 
-    player.frame =
-        0;
+    player.frame = 0;
 
+    player.frameTimer = 0;
 
-    player.frameTimer =
-        0;
+    player.velocityY = 0;
 
-
-    player.velocityY =
-        0;
-
-
-    player.grounded =
-        true;
+    player.grounded = true;
 
 
     resizeCanvas();
@@ -1257,12 +375,12 @@ function startGame() {
         player.height;
 
 
-    gamePlayerName.textContent =
-        playerName;
+    if (scoreElement) {
 
+        scoreElement.textContent =
+            "0";
 
-    scoreElement.textContent =
-        "0";
+    }
 
 
     showScreen(
@@ -1274,10 +392,16 @@ function startGame() {
         performance.now();
 
 
+    console.log(
+        "Game started."
+    );
+
+
     gameAnimationId =
         requestAnimationFrame(
             gameLoop
         );
+
 }
 
 
@@ -1288,17 +412,14 @@ function startGame() {
 function gameLoop(currentTime) {
 
     if (!gameRunning) {
+
         return;
     }
 
 
     const deltaTime =
         Math.min(
-            (
-                currentTime -
-                lastTime
-            ) / 1000,
-
+            (currentTime - lastTime) / 1000,
             0.033
         );
 
@@ -1311,30 +432,31 @@ function gameLoop(currentTime) {
         deltaTime;
 
 
+    // Gradually increase speed.
     currentSpeed =
         Math.min(
-
             MAX_SPEED,
-
             BASE_SPEED +
             elapsedTime *
             SPEED_INCREASE
-
         );
 
 
+    // Score.
     score =
         Math.floor(
-
             elapsedTime *
             currentSpeed /
             10
-
         );
 
 
-    scoreElement.textContent =
-        score;
+    if (scoreElement) {
+
+        scoreElement.textContent =
+            score;
+
+    }
 
 
     updatePlayer(
@@ -1364,7 +486,9 @@ function gameLoop(currentTime) {
             requestAnimationFrame(
                 gameLoop
             );
+
     }
+
 }
 
 
@@ -1393,17 +517,13 @@ function updatePlayer(deltaTime) {
         player.height;
 
 
-    if (
-        player.y >= floorY
-    ) {
+    if (player.y >= floorY) {
 
         player.y =
             floorY;
 
-
         player.velocityY =
             0;
-
 
         player.grounded =
             true;
@@ -1412,7 +532,9 @@ function updatePlayer(deltaTime) {
 
         player.grounded =
             false;
+
     }
+
 }
 
 
@@ -1423,11 +545,13 @@ function updatePlayer(deltaTime) {
 function jump() {
 
     if (!gameRunning) {
+
         return;
     }
 
 
     if (!player.grounded) {
+
         return;
     }
 
@@ -1438,31 +562,17 @@ function jump() {
 
     player.grounded =
         false;
+
 }
 
 
 // ============================================================
-// KEYBOARD
+// KEYBOARD CONTROLS
 // ============================================================
 
 window.addEventListener(
     "keydown",
     function (event) {
-
-        if (
-            document.activeElement ===
-                playerNameInput ||
-
-            document.activeElement ===
-                playerEmailInput ||
-
-            document.activeElement ===
-                playerPasswordInput
-        ) {
-
-            return;
-        }
-
 
         if (
             event.code === "Space" ||
@@ -1472,13 +582,15 @@ window.addEventListener(
             event.preventDefault();
 
             jump();
+
         }
+
     }
 );
 
 
 // ============================================================
-// TOUCH / POINTER
+// TOUCH / MOUSE CONTROLS
 // ============================================================
 
 if (canvas) {
@@ -1488,6 +600,7 @@ if (canvas) {
         function (event) {
 
             if (!gameRunning) {
+
                 return;
             }
 
@@ -1501,6 +614,7 @@ if (canvas) {
             passive: false
         }
     );
+
 }
 
 
@@ -1511,6 +625,7 @@ if (canvas) {
 function updateSprite(deltaTime) {
 
     if (!spriteLoaded) {
+
         return;
     }
 
@@ -1524,8 +639,7 @@ function updateSprite(deltaTime) {
         player.frameSpeed
     ) {
 
-        player.frameTimer =
-            0;
+        player.frameTimer = 0;
 
 
         player.frame =
@@ -1533,7 +647,9 @@ function updateSprite(deltaTime) {
                 player.frame + 1
             ) %
             FRAME_COUNT;
+
     }
+
 }
 
 
@@ -1568,6 +684,7 @@ function createObstacle() {
             height
 
     });
+
 }
 
 
@@ -1591,6 +708,7 @@ function updateObstacles(deltaTime) {
 
         distanceToNextObstacle =
             randomObstacleDistance();
+
     }
 
 
@@ -1617,11 +735,12 @@ function updateObstacles(deltaTime) {
 
             }
         );
+
 }
 
 
 // ============================================================
-// COLLISION
+// COLLISION DETECTION
 // ============================================================
 
 function checkCollisions() {
@@ -1639,6 +758,7 @@ function checkCollisions() {
 
         height:
             player.height - 34
+
     };
 
 
@@ -1677,76 +797,9 @@ function checkCollisions() {
 
             return;
         }
-    }
-}
 
-
-// ============================================================
-// SAVE HIGH SCORE
-// ============================================================
-
-async function saveHighScoreToDatabase() {
-
-    if (
-        !currentUser ||
-        !supabaseClient
-    ) {
-
-        console.warn(
-            "Cannot save high score: no authenticated user."
-        );
-
-        return false;
     }
 
-
-    try {
-
-        const {
-            error
-        } =
-            await supabaseClient
-                .from("players")
-                .update({
-
-                    highscore:
-                        highScore
-
-                })
-                .eq(
-                    "user_id",
-                    currentUser.id
-                );
-
-
-        if (error) {
-
-            console.error(
-                "High score save error:",
-                error
-            );
-
-            return false;
-        }
-
-
-        console.log(
-            "High score saved:",
-            highScore
-        );
-
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "High score exception:",
-            error
-        );
-
-        return false;
-    }
 }
 
 
@@ -1754,68 +807,68 @@ async function saveHighScoreToDatabase() {
 // GAME OVER
 // ============================================================
 
-async function gameOver() {
+function gameOver() {
 
     if (!gameRunning) {
+
         return;
     }
 
 
-    gameRunning =
-        false;
+    gameRunning = false;
 
 
-    if (gameAnimationId !== null) {
+    if (
+        gameAnimationId !== null
+    ) {
 
         cancelAnimationFrame(
             gameAnimationId
         );
 
-        gameAnimationId =
-            null;
+        gameAnimationId = null;
+
     }
 
 
-    const oldHighScore =
-        highScore;
-
-
-    const isNewHighScore =
-        score >
-        oldHighScore;
-
-
-    if (isNewHighScore) {
-
-        highScore =
-            score;
-
-
-        saveLocalPlayer();
-
-
-        await saveHighScoreToDatabase();
-    }
-
-
-    resultScore.textContent =
-        score;
-
-
-    resultHighScore.textContent =
-        "HIGH SCORE: " +
-        highScore;
-
-
-    resultPanel.classList.toggle(
-        "new-record",
-        isNewHighScore
+    console.log(
+        "Game over. Score:",
+        score
     );
 
 
+    // Show current score.
+    if (resultScore) {
+
+        resultScore.textContent =
+            score;
+
+    }
+
+
+    // There is NO high score anymore.
+    if (resultHighScore) {
+
+        resultHighScore.textContent =
+            "";
+
+    }
+
+
+    if (resultPanel) {
+
+        resultPanel.classList.remove(
+            "new-record"
+        );
+
+    }
+
+
+    // Show surprise screen.
     showScreen(
         surpriseScreen
     );
+
 }
 
 
@@ -1826,20 +879,16 @@ async function gameOver() {
 function drawGame() {
 
     if (!ctx) {
+
         return;
     }
 
 
     ctx.clearRect(
-
         0,
-
         0,
-
         window.innerWidth,
-
         window.innerHeight
-
     );
 
 
@@ -1850,6 +899,7 @@ function drawGame() {
     drawObstacles();
 
     drawPlayer();
+
 }
 
 
@@ -1862,19 +912,16 @@ function drawBackground() {
     const width =
         window.innerWidth;
 
-
     const height =
         window.innerHeight;
 
 
     const gradient =
         ctx.createLinearGradient(
-
             0,
             0,
             0,
             height
-
         );
 
 
@@ -1901,12 +948,10 @@ function drawBackground() {
 
 
     ctx.fillRect(
-
         0,
         0,
         width,
         height
-
     );
 
 
@@ -1920,6 +965,7 @@ function drawBackground() {
         width,
         height
     );
+
 }
 
 
@@ -1975,8 +1021,10 @@ function drawStars(
 
 
             ctx.fill();
+
         }
     );
+
 }
 
 
@@ -2121,6 +1169,7 @@ function drawMountains(
 
 
     ctx.fill();
+
 }
 
 
@@ -2144,12 +1193,10 @@ function drawGround() {
 
 
     ctx.fillRect(
-
         0,
         roadY,
         window.innerWidth,
         roadHeight
-
     );
 
 
@@ -2158,31 +1205,25 @@ function drawGround() {
 
 
     ctx.fillRect(
-
         0,
         groundY,
         window.innerWidth,
         3
-
     );
 
 
     const markWidth =
         55;
 
-
     const gap =
         90;
 
 
     const offset =
-
         (
             elapsedTime *
             currentSpeed
-
         ) %
-
         (
             markWidth +
             gap
@@ -2194,27 +1235,20 @@ function drawGround() {
 
 
     for (
-
         let x = -offset;
-
         x < window.innerWidth;
-
         x += markWidth + gap
-
     ) {
 
         ctx.fillRect(
-
             x,
-
             groundY + 32,
-
             markWidth,
-
             3
-
         );
+
     }
+
 }
 
 
@@ -2227,6 +1261,7 @@ function drawObstacles() {
     obstacles.forEach(
         function (obstacle) {
 
+            // Shadow
             ctx.fillStyle =
                 "rgba(0,0,0,0.45)";
 
@@ -2245,6 +1280,7 @@ function drawObstacles() {
             );
 
 
+            // Obstacle gradient
             const gradient =
                 ctx.createLinearGradient(
 
@@ -2291,6 +1327,7 @@ function drawObstacles() {
             );
 
 
+            // Border
             ctx.strokeStyle =
                 "rgba(195,165,235,0.65)";
 
@@ -2308,8 +1345,10 @@ function drawObstacles() {
                 obstacle.height
 
             );
+
         }
     );
+
 }
 
 
@@ -2358,6 +1397,7 @@ function drawPlayer() {
         player.height
 
     );
+
 }
 
 
@@ -2370,7 +1410,6 @@ function drawFallbackPlayer() {
     const x =
         player.x;
 
-
     const y =
         player.y;
 
@@ -2380,12 +1419,10 @@ function drawFallbackPlayer() {
 
 
     ctx.fillRect(
-
         x + 27,
         y + 58,
         50,
         65
-
     );
 
 
@@ -2397,13 +1434,11 @@ function drawFallbackPlayer() {
 
 
     ctx.arc(
-
         x + 52,
         y + 42,
         24,
         0,
         Math.PI * 2
-
     );
 
 
@@ -2470,44 +1505,39 @@ function drawFallbackPlayer() {
 
 
     ctx.fillRect(
-
         x + 30,
         y + 120,
         17,
         30
-
     );
 
 
     ctx.fillRect(
-
         x + 58,
         y + 120,
         17,
         30
-
     );
+
 }
 
 
 // ============================================================
-// RESIZE
+// RESIZE CANVAS
 // ============================================================
 
 function resizeCanvas() {
 
     if (!canvas || !ctx) {
+
         return;
     }
 
 
     const dpr =
         Math.min(
-
             window.devicePixelRatio || 1,
-
             2
-
         );
 
 
@@ -2532,19 +1562,18 @@ function resizeCanvas() {
 
 
     ctx.setTransform(
-
         dpr,
         0,
         0,
         dpr,
         0,
         0
-
     );
 
 
     ctx.imageSmoothingEnabled =
         false;
+
 }
 
 
@@ -2560,7 +1589,6 @@ window.addEventListener(
 
 resizeCanvas();
 
-
 showScreen(
     introScreen
 );
@@ -2569,4 +1597,3 @@ showScreen(
 console.log(
     "Anime Runner loaded successfully."
 );
-```

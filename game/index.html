@@ -12,10 +12,7 @@
 
     <title>Anime Runner</title>
 
-    <link
-        rel="stylesheet"
-        href="game.css"
-    >
+    <link rel="stylesheet" href="game.css">
 
 </head>
 
@@ -51,75 +48,8 @@
             </p>
 
             <button id="startIntroButton">
-                BEGIN
+                ENTER GAME 1
             </button>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- =====================================================
-         ACCOUNT SCREEN
-    ====================================================== -->
-
-    <section
-        id="nameScreen"
-        class="screen"
-    >
-
-        <div class="panel">
-
-            <p class="small-text">
-                IDENTITY
-            </p>
-
-            <h2 id="accountTitle">
-                ENTER YOUR NAME
-            </h2>
-
-
-            <!-- USERNAME -->
-
-            <input
-                type="text"
-                id="playerName"
-                maxlength="16"
-                placeholder="Username..."
-                autocomplete="username"
-            >
-
-
-            <!-- EMAIL -->
-
-            <input
-                type="email"
-                id="playerEmail"
-                maxlength="120"
-                placeholder="Email..."
-                autocomplete="email"
-            >
-
-
-            <!-- PASSWORD -->
-
-            <input
-                type="password"
-                id="playerPassword"
-                minlength="6"
-                maxlength="72"
-                placeholder="Password..."
-                autocomplete="current-password"
-            >
-
-
-            <button id="nameButton">
-                CONTINUE
-            </button>
-
-
-            <p id="nameError"></p>
 
         </div>
 
@@ -140,36 +70,20 @@
 
         <div class="lobby-content">
 
-            <p
-                class="small-text"
-                id="welcomeLabel"
-            >
-                WELCOME
+            <p class="small-text">
+                ANIME RUNNER
             </p>
 
-            <h1 id="welcomeText">
-                WELCOME
+            <h1>
+                READY?
             </h1>
 
-            <p
-                id="savedHighScore"
-                class="saved-high-score"
-            >
-                HIGH SCORE: 0
+            <p class="intro-description">
+                Your journey is about to begin.
             </p>
 
-            <div class="character-placeholder">
-
-                <div class="character-glow"></div>
-
-                <div class="character">
-                    <span>✦</span>
-                </div>
-
-            </div>
-
-            <button id="playButton">
-                PLAY
+            <button id="continueButton">
+                CONTINUE
             </button>
 
         </div>
@@ -195,16 +109,13 @@
             <div class="game-top">
 
                 <div class="player-display">
-
-                    <span id="gamePlayerName">
-                    </span>
-
+                    ANIME RUNNER
                 </div>
-
 
                 <div class="score-display">
 
                     SCORE
+
                     <span id="score">
                         0
                     </span>
@@ -253,7 +164,7 @@
 
 
             <p id="resultHighScore">
-                HIGH SCORE: 0
+                SCORE: 0
             </p>
 
 
@@ -261,7 +172,7 @@
                 id="newRecordText"
                 class="new-record-text"
             >
-                NEW HIGH SCORE
+                TRY AGAIN
             </p>
 
 
@@ -283,24 +194,6 @@
 
 
 </div>
-
-
-<!-- =========================================================
-     SUPABASE
-========================================================= -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-<script>
-
-    window.SUPABASE_URL =
-        "https://wtkbhftkcniyzrvplfjg.supabase.co";
-
-    window.SUPABASE_KEY =
-        "sb_publishable_MJklkWhR0k6TIKmnsD6eLg_msA8G3e6";
-
-</script>
 
 
 <script src="game.js"></script>
