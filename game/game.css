@@ -1,35 +1,61 @@
 /* ============================================================
    ANIME RUNNER
-   GAME CSS
+   ============================================================ */
+
+@import url(
+    'https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Orbitron:wght@500;600;700&display=swap'
+);
+
+
+/* ============================================================
+   RESET
    ============================================================ */
 
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
+
 
 html,
 body {
     width: 100%;
     height: 100%;
     overflow: hidden;
-    background: #050509;
-    font-family: "Orbitron", sans-serif;
-    color: white;
+}
+
+
+body {
+
+    background:
+        radial-gradient(
+            circle at center,
+            #171329 0%,
+            #090811 55%,
+            #030307 100%
+        );
+
+    color: #eeeaff;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
 }
 
 
 /* ============================================================
-   SCREEN SYSTEM
+   SCREENS
    ============================================================ */
 
 .screen {
+
     position: fixed;
+
     inset: 0;
 
-    width: 100%;
-    height: 100%;
+    width: 100vw;
+    height: 100vh;
 
     display: none;
 
@@ -38,16 +64,9 @@ body {
 
     text-align: center;
 
-    background:
-        radial-gradient(
-            circle at center,
-            #171329 0%,
-            #0a0912 48%,
-            #050509 100%
-        );
-
     z-index: 10;
 }
+
 
 .screen.active {
     display: flex;
@@ -55,127 +74,143 @@ body {
 
 
 /* ============================================================
-   INTRO SCREEN
+   INTRO
    ============================================================ */
 
 #introScreen {
-    flex-direction: column;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(32, 24, 52, 0.75),
+            rgba(3, 3, 8, 0.98)
+        );
 }
+
 
 .intro-content {
+
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
+
     justify-content: center;
-
-    width: 90%;
-    max-width: 800px;
-}
-
-.game-title {
-    font-family: "Cinzel", serif;
-
-    font-size: clamp(42px, 8vw, 88px);
-
-    letter-spacing: 8px;
-
-    color: #e5d9ff;
-
-    text-shadow:
-        0 0 12px rgba(180, 150, 255, 0.35),
-        0 0 35px rgba(120, 80, 200, 0.2);
-
-    margin-bottom: 18px;
-}
-
-.game-subtitle {
-    font-size: clamp(12px, 2vw, 18px);
-
-    letter-spacing: 5px;
-
-    color: #9993aa;
-
-    margin-bottom: 55px;
 }
 
 
 /* ============================================================
-   BUTTONS
+   MAIN TITLE
+   ============================================================ */
+
+.game-title {
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size:
+        clamp(38px, 6vw, 76px);
+
+    font-weight: 700;
+
+    letter-spacing: 5px;
+
+    color: #e9ddff;
+
+    text-shadow:
+        0 0 10px rgba(170, 130, 255, 0.35),
+        0 0 35px rgba(120, 80, 220, 0.18);
+
+    margin-bottom: 12px;
+}
+
+
+.game-subtitle {
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size:
+        clamp(10px, 1.4vw, 15px);
+
+    letter-spacing: 5px;
+
+    color: #9e91bd;
+
+    margin-bottom: 45px;
+}
+
+
+/* ============================================================
+   BUTTON
    ============================================================ */
 
 .game-button {
-    min-width: 220px;
 
-    padding: 15px 30px;
-
-    border: 1px solid rgba(200, 180, 255, 0.5);
-
-    border-radius: 4px;
+    border:
+        1px solid rgba(202, 178, 245, 0.45);
 
     background:
         linear-gradient(
             135deg,
-            rgba(80, 55, 120, 0.85),
-            rgba(35, 27, 55, 0.95)
+            rgba(76, 51, 111, 0.95),
+            rgba(35, 25, 55, 0.98)
         );
 
-    color: #eee8ff;
+    color: #eee7ff;
 
-    font-family: "Orbitron", sans-serif;
+    font-family:
+        "Orbitron",
+        sans-serif;
 
-    font-size: 14px;
+    font-size: 13px;
 
     font-weight: 600;
 
     letter-spacing: 3px;
 
+    padding: 15px 34px;
+
+    min-width: 200px;
+
+    border-radius: 4px;
+
     cursor: pointer;
 
+    box-shadow:
+        0 0 20px rgba(100, 70, 160, 0.15);
+
     transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease,
-        background 0.2s ease;
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
 }
 
+
 .game-button:hover {
-    transform: translateY(-2px);
+
+    transform:
+        translateY(-2px);
 
     background:
         linear-gradient(
             135deg,
-            rgba(105, 75, 155, 0.95),
-            rgba(45, 32, 70, 0.98)
+            rgba(98, 68, 140, 1),
+            rgba(45, 31, 70, 1)
         );
 
     box-shadow:
-        0 0 18px rgba(160, 120, 230, 0.25);
+        0 0 25px rgba(150, 110, 220, 0.3);
 }
+
 
 .game-button:active {
-    transform: translateY(1px);
-}
 
-.game-button:disabled {
-    opacity: 0.55;
-    cursor: default;
-    transform: none;
-}
-
-
-/* ============================================================
-   ENTER GAME 1 BUTTON
-   ============================================================ */
-
-#startIntroButton {
-    min-width: 250px;
-
-    padding: 17px 34px;
-
-    font-size: 15px;
-
-    letter-spacing: 4px;
-
-    text-transform: uppercase;
+    transform:
+        translateY(0);
 }
 
 
@@ -184,95 +219,79 @@ body {
    ============================================================ */
 
 #lobbyScreen {
-    flex-direction: column;
 
     background:
         radial-gradient(
-            circle at 50% 40%,
-            #1a1530 0%,
-            #0b0912 48%,
-            #050509 100%
+            circle at center,
+            rgba(32, 24, 52, 0.78),
+            rgba(3, 3, 8, 0.98)
         );
 }
 
+
 .lobby-content {
+
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
 
-    width: 90%;
-    max-width: 700px;
+    justify-content: center;
 }
+
 
 .lobby-label {
-    font-size: 13px;
+
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size: 11px;
 
     letter-spacing: 5px;
 
-    color: #8f879f;
+    color: #9184ae;
 
     margin-bottom: 15px;
 }
 
-#welcomeText {
-    font-family: "Cinzel", serif;
-
-    font-size: clamp(35px, 7vw, 65px);
-
-    color: #e6dcff;
-
-    letter-spacing: 5px;
-
-    margin-bottom: 25px;
-
-    text-shadow:
-        0 0 20px rgba(160, 120, 230, 0.25);
-}
-
-
-/*
-   New lobby:
-   No username.
-   No email.
-   No password.
-   No high score.
-*/
 
 .lobby-title {
-    font-family: "Cinzel", serif;
 
-    font-size: clamp(30px, 6vw, 58px);
+    font-family:
+        "Cinzel",
+        serif;
 
-    letter-spacing: 6px;
+    font-size:
+        clamp(42px, 6vw, 72px);
 
-    color: #e6dcff;
+    font-weight: 700;
 
-    margin-bottom: 15px;
+    letter-spacing: 5px;
+
+    color: #eee6ff;
+
+    text-shadow:
+        0 0 18px rgba(150, 110, 220, 0.25);
+
+    margin-bottom: 14px;
 }
+
 
 .lobby-description {
-    color: #8e8998;
 
-    font-size: 13px;
+    font-family:
+        "Orbitron",
+        sans-serif;
 
-    letter-spacing: 2px;
-
-    margin-bottom: 45px;
-}
-
-
-/* ============================================================
-   CONTINUE BUTTON
-   ============================================================ */
-
-#playButton {
-    min-width: 230px;
-
-    padding: 17px 35px;
-
-    font-size: 15px;
+    font-size: 11px;
 
     letter-spacing: 4px;
+
+    color: #817696;
+
+    margin-bottom: 38px;
 }
 
 
@@ -281,23 +300,18 @@ body {
    ============================================================ */
 
 #gameScreen {
-    display: none;
 
-    position: fixed;
+    padding: 0;
 
-    inset: 0;
+    background: transparent;
 
-    width: 100%;
-    height: 100%;
-
-    background: #050509;
-
-    overflow: hidden;
-
-    z-index: 20;
+    align-items: stretch;
+    justify-content: stretch;
 }
 
+
 #gameScreen.active {
+
     display: block;
 }
 
@@ -307,90 +321,89 @@ body {
    ============================================================ */
 
 #gameCanvas {
-    position: absolute;
 
-    left: 0;
-    top: 0;
+    position: fixed;
 
-    width: 100%;
-    height: 100%;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
 
     display: block;
 
-    touch-action: none;
-
-    image-rendering: pixelated;
-
     z-index: 1;
+
+    touch-action: none;
 }
 
 
 /* ============================================================
-   GAME HUD
+   SCORE
    ============================================================ */
 
-.game-hud {
-    position: absolute;
+.game-ui {
 
-    top: 20px;
-    left: 25px;
-    right: 25px;
+    position: fixed;
+
+    top: 22px;
+
+    left: 0;
+
+    width: 100%;
 
     display: flex;
 
-    align-items: center;
-    justify-content: space-between;
+    justify-content: center;
 
     pointer-events: none;
 
     z-index: 5;
 }
 
-#gamePlayerName {
-    display: none;
-}
 
 #score {
-    font-family: "Orbitron", sans-serif;
 
-    font-size: 20px;
+    font-family:
+        "Orbitron",
+        sans-serif;
 
-    font-weight: 600;
+    font-size: 18px;
 
     letter-spacing: 3px;
 
-    color: #e6ddf5;
+    color: #eeeaff;
 
     text-shadow:
-        0 0 10px rgba(180, 150, 255, 0.25);
+        0 0 10px rgba(180, 150, 255, 0.45);
 }
 
 
 /* ============================================================
-   GAME OVER / SURPRISE SCREEN
+   GAME OVER
    ============================================================ */
 
 #surpriseScreen {
-    flex-direction: column;
 
     background:
         radial-gradient(
             circle at center,
-            #211733 0%,
-            #0b0912 48%,
-            #050509 100%
+            rgba(30, 21, 45, 0.97),
+            rgba(3, 3, 7, 0.99)
         );
 
-    z-index: 30;
+    z-index: 20;
 }
 
-.result-content {
+
+#resultPanel {
+
     display: flex;
+
     flex-direction: column;
+
     align-items: center;
 
-    width: 90%;
-    max-width: 600px;
+    justify-content: center;
 }
 
 
@@ -398,163 +411,91 @@ body {
    SURPRISE IMAGE
    ============================================================ */
 
-#surpriseScreen img {
-    width: min(260px, 55vw);
+#surpriseImage {
 
-    height: auto;
+    display: block;
 
-    max-height: 260px;
+    width: min(300px, 65vw);
+
+    max-height: 40vh;
 
     object-fit: contain;
 
-    margin-bottom: 25px;
-
-    image-rendering: auto;
+    margin-bottom: 20px;
 
     filter:
         drop-shadow(
-            0 0 25px rgba(170, 130, 230, 0.25)
+            0 0 25px rgba(130, 90, 190, 0.3)
         );
 }
 
 
 /* ============================================================
-   RESULT
+   GAME OVER TEXT
    ============================================================ */
 
-.result-title {
-    font-family: "Cinzel", serif;
+.game-over-label {
 
-    font-size: clamp(30px, 6vw, 55px);
+    font-family:
+        "Orbitron",
+        sans-serif;
+
+    font-size: 11px;
 
     letter-spacing: 5px;
 
-    color: #e6dcff;
+    color: #9184ae;
+
+    margin-bottom: 10px;
+}
+
+
+.game-over-title {
+
+    font-family:
+        "Cinzel",
+        serif;
+
+    font-size:
+        clamp(27px, 4vw, 48px);
+
+    letter-spacing: 3px;
+
+    color: #eee6ff;
 
     margin-bottom: 20px;
 }
 
-#resultScore {
-    font-size: 28px;
 
-    font-weight: 600;
+.current-score-label {
 
-    letter-spacing: 3px;
+    font-family:
+        "Orbitron",
+        sans-serif;
 
-    color: #ddd5ed;
-
-    margin-bottom: 12px;
-}
-
-#resultHighScore {
-    font-size: 14px;
-
-    letter-spacing: 3px;
-
-    color: #8e8998;
-
-    margin-bottom: 35px;
-}
-
-
-/*
-   We are NOT saving high scores anymore.
-   This element is hidden just in case old HTML still contains it.
-*/
-
-#resultHighScore,
-#savedHighScore {
-    display: none;
-}
-
-
-/* ============================================================
-   RETRY BUTTON
-   ============================================================ */
-
-#retryButton {
-    min-width: 220px;
-
-    padding: 16px 30px;
-
-    font-size: 14px;
+    font-size: 10px;
 
     letter-spacing: 4px;
+
+    color: #817696;
+
+    margin-bottom: 5px;
 }
 
 
-/* ============================================================
-   OLD ACCOUNT / NAME SCREEN
-   ============================================================ */
+#resultScore {
 
-/*
-   These are hidden because the new version does NOT ask for:
-   - username
-   - email
-   - password
-*/
+    font-family:
+        "Orbitron",
+        sans-serif;
 
-#nameScreen {
-    display: none !important;
-}
+    font-size: 26px;
 
-#nameScreen.active {
-    display: none !important;
-}
+    letter-spacing: 3px;
 
+    color: #d9c9ff;
 
-/* Hide old account inputs if they still exist in HTML */
-
-#playerName,
-#playerEmail,
-#playerPassword,
-#nameButton,
-#nameError,
-.account-form {
-    display: none;
-}
-
-
-/* ============================================================
-   NEW RECORD STYLE
-   ============================================================ */
-
-.resultPanel.new-record {
-    animation:
-        newRecordPulse 1.2s ease-in-out infinite alternate;
-}
-
-@keyframes newRecordPulse {
-
-    from {
-        transform: scale(1);
-    }
-
-    to {
-        transform: scale(1.025);
-    }
-}
-
-
-/* ============================================================
-   GENERAL ANIMATION
-   ============================================================ */
-
-@keyframes fadeIn {
-
-    from {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.screen.active > * {
-    animation: fadeIn 0.35s ease-out;
+    margin-bottom: 25px;
 }
 
 
@@ -565,70 +506,35 @@ body {
 @media (max-width: 600px) {
 
     .game-title {
-        letter-spacing: 4px;
-    }
 
-    .game-subtitle {
         letter-spacing: 3px;
-        margin-bottom: 40px;
     }
 
-    .game-button {
-        min-width: 200px;
-        padding: 14px 24px;
-    }
-
-    .game-hud {
-        top: 15px;
-        left: 15px;
-        right: 15px;
-    }
-
-    #score {
-        font-size: 17px;
-    }
-
-    #surpriseScreen img {
-        width: min(220px, 60vw);
-    }
-}
-
-
-/* ============================================================
-   SMALL PHONE
-   ============================================================ */
-
-@media (max-height: 600px) {
-
-    .game-title {
-        font-size: 38px;
-        margin-bottom: 10px;
-    }
 
     .game-subtitle {
-        margin-bottom: 25px;
+
+        letter-spacing: 3px;
     }
+
 
     .lobby-title {
-        font-size: 32px;
+
+        letter-spacing: 3px;
     }
 
-    .lobby-description {
-        margin-bottom: 25px;
+
+    .game-button {
+
+        min-width: 180px;
+
+        padding: 14px 28px;
+
+        font-size: 12px;
     }
 
-    #surpriseScreen img {
-        width: 160px;
-        margin-bottom: 12px;
-    }
 
-    .result-title {
-        font-size: 30px;
-        margin-bottom: 10px;
-    }
+    #score {
 
-    #resultScore {
-        font-size: 22px;
-        margin-bottom: 8px;
+        font-size: 15px;
     }
 }

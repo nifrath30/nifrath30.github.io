@@ -1,20 +1,52 @@
+console.log("========================================");
+console.log("ANIME RUNNER GAME.JS STARTED");
+console.log("========================================");
+
+
 // ============================================================
 // ANIME RUNNER
-// Simple Game Version
-// No accounts / No Supabase / No saved player data
+// Complete standalone game
+//
+// IMPORTANT FILE STRUCTURE:
+//
+// game/
+// ├── index.html
+// ├── game.css
+// ├── game.js
+// └── assets/
+//     ├── character-run.png
+//     └── surprise.png
+//
+// CHARACTER SPRITE:
+// character-run.png must contain 8 equal horizontal frames.
+//
+// Example:
+//
+// | FRAME 1 | FRAME 2 | FRAME 3 | FRAME 4 |
+// | FRAME 5 | FRAME 6 | FRAME 7 | FRAME 8 |
+//
+// The complete image height is used.
+// No hard-coded source Y cropping is used.
 // ============================================================
 
-console.log("GAME.JS FILE STARTED");
 
 
 // ============================================================
-// ELEMENTS
+// 1. GET HTML ELEMENTS
 // ============================================================
 
-const introScreen = document.getElementById("introScreen");
-const lobbyScreen = document.getElementById("lobbyScreen");
-const gameScreen = document.getElementById("gameScreen");
-const surpriseScreen = document.getElementById("surpriseScreen");
+const introScreen =
+    document.getElementById("introScreen");
+
+const lobbyScreen =
+    document.getElementById("lobbyScreen");
+
+const gameScreen =
+    document.getElementById("gameScreen");
+
+const surpriseScreen =
+    document.getElementById("surpriseScreen");
+
 
 const startIntroButton =
     document.getElementById("startIntroButton");
@@ -25,24 +57,72 @@ const playButton =
 const retryButton =
     document.getElementById("retryButton");
 
-const scoreElement =
-    document.getElementById("score");
-
-const resultPanel =
-    document.getElementById("resultPanel");
-
-const resultScore =
-    document.getElementById("resultScore");
-
-const resultHighScore =
-    document.getElementById("resultHighScore");
 
 const canvas =
     document.getElementById("gameCanvas");
 
+const scoreElement =
+    document.getElementById("score");
+
+const resultScore =
+    document.getElementById("resultScore");
+
+const surpriseImage =
+    document.getElementById("surpriseImage");
+
+const resultPanel =
+    document.getElementById("resultPanel");
+
 
 // ============================================================
-// SAFETY CHECK
+// 2. BASIC HTML CHECK
+// ============================================================
+
+console.log("HTML elements:");
+
+console.log(
+    "introScreen:",
+    introScreen
+);
+
+console.log(
+    "lobbyScreen:",
+    lobbyScreen
+);
+
+console.log(
+    "gameScreen:",
+    gameScreen
+);
+
+console.log(
+    "surpriseScreen:",
+    surpriseScreen
+);
+
+console.log(
+    "startIntroButton:",
+    startIntroButton
+);
+
+console.log(
+    "playButton:",
+    playButton
+);
+
+console.log(
+    "retryButton:",
+    retryButton
+);
+
+console.log(
+    "canvas:",
+    canvas
+);
+
+
+// ============================================================
+// 3. STOP IF CANVAS IS MISSING
 // ============================================================
 
 if (!canvas) {
@@ -51,137 +131,181 @@ if (!canvas) {
         "ERROR: gameCanvas was not found."
     );
 
-} else {
-
-    console.log(
-        "gameCanvas found."
+    throw new Error(
+        "gameCanvas is missing from game/index.html"
     );
 }
 
+
+// ============================================================
+// 4. CANVAS CONTEXT
+// ============================================================
 
 const ctx =
-    canvas
-        ? canvas.getContext("2d")
-        : null;
+    canvas.getContext("2d");
+
+
+if (!ctx) {
+
+    console.error(
+        "ERROR: Could not create canvas context."
+    );
+
+    throw new Error(
+        "Canvas 2D context unavailable."
+    );
+}
 
 
 // ============================================================
-// SCREEN SYSTEM
+// 5. IMAGE PATHS
 // ============================================================
 
-function showScreen(screen) {
+const CHARACTER_IMAGE_PATH =
+    "assets/character-run.png";
 
-    if (!screen) {
+const SURPRISE_IMAGE_PATH =
+    "assets/surprise.png";
+
+
+// ============================================================
+// 6. CHARACTER SPRITE
+// ============================================================
+
+const characterSprite =
+    new Image();
+
+characterSprite.src =
+    CHARACTER_IMAGE_PATH;
+
+
+let characterSpriteLoaded = false;
+
+let characterSpriteFailed = false;
+
+
+characterSprite.onload =
+    function () {
+
+        characterSpriteLoaded = true;
+
+        characterSpriteFailed = false;
+
+        console.log(
+            "========================================"
+        );
+
+        console.log(
+            "CHARACTER SPRITE LOADED"
+        );
+
+        console.log(
+            "Natural width:",
+            characterSprite.naturalWidth
+        );
+
+        console.log(
+            "Natural height:",
+            characterSprite.naturalHeight
+        );
+
+        console.log(
+            "Expected frames:",
+            FRAME_COUNT
+        );
+
+        console.log(
+            "Frame width:",
+            characterSprite.naturalWidth /
+            FRAME_COUNT
+        );
+
+        console.log(
+            "Frame height:",
+            characterSprite.naturalHeight
+        );
+
+        console.log(
+            "========================================"
+        );
+    };
+
+
+characterSprite.onerror =
+    function () {
+
+        characterSpriteLoaded = false;
+
+        characterSpriteFailed = true;
 
         console.error(
-            "Screen element not found."
+            "========================================"
         );
 
-        return;
-    }
-
-
-    document
-        .querySelectorAll(".screen")
-        .forEach(
-            function (element) {
-
-                element.classList.remove(
-                    "active"
-                );
-            }
+        console.error(
+            "CHARACTER SPRITE FAILED TO LOAD"
         );
 
+        console.error(
+            "Expected file:",
+            CHARACTER_IMAGE_PATH
+        );
 
-    screen.classList.add(
-        "active"
-    );
+        console.error(
+            "Make sure character-run.png is inside:"
+        );
+
+        console.error(
+            "game/assets/"
+        );
+
+        console.error(
+            "========================================"
+        );
+    };
+
+
+// ============================================================
+// 7. SURPRISE IMAGE
+// ============================================================
+
+if (surpriseImage) {
+
+    surpriseImage.src =
+        SURPRISE_IMAGE_PATH;
 }
 
 
 // ============================================================
-// BEGIN / ENTER GAME 1
+// 8. SPRITE SETTINGS
+// ============================================================
+//
+// IMPORTANT:
+//
+// Your character image is an 8-frame horizontal sprite.
+//
+// Therefore:
+//
+// FRAME_COUNT = 8
+//
+// frameWidth = imageWidth / 8
+//
+// frameHeight = imageHeight
+//
+// There is intentionally NO:
+//
+// SPRITE_SOURCE_Y
+// SPRITE_SOURCE_HEIGHT
+//
+// This prevents the old head/leg/previous-frame
+// cropping problem.
 // ============================================================
 
-if (startIntroButton) {
-
-    startIntroButton.addEventListener(
-        "click",
-        function () {
-
-            console.log(
-                "ENTER GAME 1 clicked."
-            );
-
-
-            showScreen(
-                lobbyScreen
-            );
-
-        }
-    );
-
-} else {
-
-    console.error(
-        "ENTER GAME 1 button not found."
-    );
-}
+const FRAME_COUNT = 8;
 
 
 // ============================================================
-// CONTINUE
-// ============================================================
-
-if (playButton) {
-
-    playButton.addEventListener(
-        "click",
-        function () {
-
-            console.log(
-                "CONTINUE clicked."
-            );
-
-
-            startGame();
-
-        }
-    );
-
-} else {
-
-    console.error(
-        "CONTINUE button not found."
-    );
-}
-
-
-// ============================================================
-// RETRY
-// ============================================================
-
-if (retryButton) {
-
-    retryButton.addEventListener(
-        "click",
-        function () {
-
-            console.log(
-                "RETRY clicked."
-            );
-
-
-            startGame();
-
-        }
-    );
-
-}
-
-
-// ============================================================
-// GAME VARIABLES
+// 9. GAME STATE
 // ============================================================
 
 let gameRunning = false;
@@ -194,19 +318,38 @@ let elapsedTime = 0;
 
 let score = 0;
 
-let groundY = 0;
 
-let currentSpeed = 360;
+// ============================================================
+// 10. SPEED
+// ============================================================
+//
+// The game does NOT start extremely fast.
+//
+// It starts at BASE_SPEED.
+//
+// It then gradually increases.
+//
+// MAX_SPEED prevents it from becoming impossible.
+// ============================================================
 
-const BASE_SPEED = 360;
+const BASE_SPEED = 300;
 
 const MAX_SPEED = 620;
 
-const SPEED_INCREASE = 3.2;
+const SPEED_INCREASE = 16;
 
 
 // ============================================================
-// PLAYER
+// 11. WORLD
+// ============================================================
+
+let groundY = 0;
+
+let roadHeight = 105;
+
+
+// ============================================================
+// 12. PLAYER
 // ============================================================
 
 const player = {
@@ -217,11 +360,11 @@ const player = {
 
     width: 105,
 
-    height: 165,
+    height: 150,
 
     velocityY: 0,
 
-    jumpPower: -920,
+    jumpPower: -820,
 
     gravity: 2200,
 
@@ -231,64 +374,12 @@ const player = {
 
     frameTimer: 0,
 
-    frameSpeed: 0.09
-
+    frameDuration: 0.085
 };
 
 
 // ============================================================
-// PLAYER SPRITE
-// ============================================================
-
-const playerSprite =
-    new Image();
-
-
-// IMPORTANT:
-// game.js is inside the "game" folder.
-// The sprite is inside "game/assets".
-playerSprite.src =
-    "assets/character-run.png";
-
-
-let spriteLoaded = false;
-
-
-playerSprite.onload =
-    function () {
-
-        spriteLoaded = true;
-
-        console.log(
-            "Character sprite loaded successfully."
-        );
-
-    };
-
-
-playerSprite.onerror =
-    function () {
-
-        spriteLoaded = false;
-
-        console.error(
-            "ERROR: character-run.png could not be loaded."
-        );
-
-    };
-
-
-const FRAME_COUNT = 8;
-
-
-// These values are based on your existing sprite.
-const SPRITE_SOURCE_Y = 280;
-
-const SPRITE_SOURCE_HEIGHT = 350;
-
-
-// ============================================================
-// OBSTACLES
+// 13. OBSTACLES
 // ============================================================
 
 let obstacles = [];
@@ -296,78 +387,276 @@ let obstacles = [];
 let distanceToNextObstacle = 0;
 
 
-function randomObstacleDistance() {
-
-    return (
-        420 +
-        Math.random() * 520
-    );
-
-}
-
-
 // ============================================================
-// START GAME
+// 14. SCREEN SWITCHING
 // ============================================================
 
-function startGame() {
+function showScreen(screen) {
 
-    if (!canvas || !ctx) {
+    if (!screen) {
 
         console.error(
-            "Cannot start game: canvas is missing."
+            "showScreen received a missing element."
         );
 
         return;
     }
 
 
-    // Stop previous animation.
-    if (
-        gameAnimationId !== null
-    ) {
-
-        cancelAnimationFrame(
-            gameAnimationId
+    const screens =
+        document.querySelectorAll(
+            ".screen"
         );
 
-        gameAnimationId = null;
 
-    }
+    screens.forEach(
+        function (element) {
 
-
-    gameRunning = true;
-
-
-    elapsedTime = 0;
-
-    score = 0;
-
-    currentSpeed =
-        BASE_SPEED;
+            element.classList.remove(
+                "active"
+            );
+        }
+    );
 
 
-    obstacles = [];
+    screen.classList.add(
+        "active"
+    );
+}
 
 
-    distanceToNextObstacle =
-        randomObstacleDistance();
+// ============================================================
+// 15. INTRO → LOBBY
+// ============================================================
+
+if (startIntroButton) {
+
+    startIntroButton.addEventListener(
+        "click",
+        function () {
+
+            console.log(
+                "ENTER GAME 1 clicked."
+            );
+
+            showLobby();
+        }
+    );
+
+} else {
+
+    console.error(
+        "ENTER GAME 1 button not found."
+    );
+}
 
 
-    player.frame = 0;
+// ============================================================
+// 16. SHOW LOBBY
+// ============================================================
 
-    player.frameTimer = 0;
+function showLobby() {
 
-    player.velocityY = 0;
+    stopGame();
 
-    player.grounded = true;
+    showScreen(
+        lobbyScreen
+    );
+
+    console.log(
+        "Lobby displayed."
+    );
+}
 
 
-    resizeCanvas();
+// ============================================================
+// 17. CONTINUE BUTTON
+// ============================================================
+//
+// This is the important part.
+//
+// Your HTML has:
+//
+// id="playButton"
+//
+// Therefore this listener is attached directly
+// to that button.
+// ============================================================
+
+if (playButton) {
+
+    playButton.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            console.log(
+                "========================================"
+            );
+
+            console.log(
+                "CONTINUE BUTTON CLICKED"
+            );
+
+            console.log(
+                "Starting game..."
+            );
+
+            console.log(
+                "========================================"
+            );
+
+            startGame();
+        }
+    );
+
+} else {
+
+    console.error(
+        "========================================"
+    );
+
+    console.error(
+        "CONTINUE BUTTON NOT FOUND!"
+    );
+
+    console.error(
+        "Expected HTML:"
+    );
+
+    console.error(
+        '<button id="playButton">'
+    );
+
+    console.error(
+        "========================================"
+    );
+}
+
+
+// ============================================================
+// 18. RETRY BUTTON
+// ============================================================
+
+if (retryButton) {
+
+    retryButton.addEventListener(
+        "click",
+        function (event) {
+
+            event.preventDefault();
+
+            event.stopPropagation();
+
+            console.log(
+                "RETRY clicked."
+            );
+
+            startGame();
+        }
+    );
+
+} else {
+
+    console.error(
+        "Retry button not found."
+    );
+}
+
+
+// ============================================================
+// 19. RESIZE CANVAS
+// ============================================================
+
+function resizeCanvas() {
+
+    const width =
+        window.innerWidth;
+
+    const height =
+        window.innerHeight;
+
+
+    const dpr =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
+
+
+    canvas.width =
+        Math.floor(
+            width * dpr
+        );
+
+
+    canvas.height =
+        Math.floor(
+            height * dpr
+        );
+
+
+    canvas.style.width =
+        width + "px";
+
+
+    canvas.style.height =
+        height + "px";
+
+
+    ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+    );
+
+
+    ctx.imageSmoothingEnabled =
+        false;
 
 
     groundY =
-        window.innerHeight - 105;
+        height - roadHeight;
+}
+
+
+window.addEventListener(
+    "resize",
+    function () {
+
+        resizeCanvas();
+
+        if (gameRunning) {
+
+            player.y =
+                Math.min(
+                    player.y,
+                    groundY -
+                    player.height
+                );
+        }
+    }
+);
+
+
+// ============================================================
+// 20. RESET PLAYER
+// ============================================================
+
+function resetPlayer() {
+
+    groundY =
+        window.innerHeight -
+        roadHeight;
+
+
+    player.x = 110;
 
 
     player.y =
@@ -375,12 +664,101 @@ function startGame() {
         player.height;
 
 
-    if (scoreElement) {
+    player.velocityY =
+        0;
 
-        scoreElement.textContent =
-            "0";
 
-    }
+    player.grounded =
+        true;
+
+
+    player.frame =
+        0;
+
+
+    player.frameTimer =
+        0;
+}
+
+
+// ============================================================
+// 21. RANDOM OBSTACLE DISTANCE
+// ============================================================
+//
+// This is distance in world pixels, not milliseconds.
+//
+// The gaps are randomized.
+// ============================================================
+
+function randomObstacleDistance() {
+
+    const minimum =
+        480;
+
+    const maximum =
+        900;
+
+
+    return (
+        minimum +
+        Math.random() *
+        (
+            maximum -
+            minimum
+        )
+    );
+}
+
+
+// ============================================================
+// 22. START GAME
+// ============================================================
+
+function startGame() {
+
+    console.log(
+        "========================================"
+    );
+
+    console.log(
+        "START GAME"
+    );
+
+    console.log(
+        "========================================"
+    );
+
+
+    stopGame();
+
+
+    resizeCanvas();
+
+
+    gameRunning =
+        true;
+
+
+    elapsedTime =
+        0;
+
+
+    score =
+        0;
+
+
+    obstacles =
+        [];
+
+
+    distanceToNextObstacle =
+        randomObstacleDistance();
+
+
+    resetPlayer();
+
+
+    updateScoreDisplay();
 
 
     showScreen(
@@ -392,21 +770,43 @@ function startGame() {
         performance.now();
 
 
-    console.log(
-        "Game started."
-    );
+    drawGame();
 
 
     gameAnimationId =
         requestAnimationFrame(
             gameLoop
         );
-
 }
 
 
 // ============================================================
-// GAME LOOP
+// 23. STOP GAME
+// ============================================================
+
+function stopGame() {
+
+    gameRunning =
+        false;
+
+
+    if (
+        gameAnimationId !== null
+    ) {
+
+        cancelAnimationFrame(
+            gameAnimationId
+        );
+
+
+        gameAnimationId =
+            null;
+    }
+}
+
+
+// ============================================================
+// 24. GAME LOOP
 // ============================================================
 
 function gameLoop(currentTime) {
@@ -417,22 +817,38 @@ function gameLoop(currentTime) {
     }
 
 
-    const deltaTime =
-        Math.min(
-            (currentTime - lastTime) / 1000,
-            0.033
-        );
+    let deltaTime =
+        (
+            currentTime -
+            lastTime
+        ) / 1000;
 
 
     lastTime =
         currentTime;
 
 
+    // Prevent huge physics jumps if the browser
+    // freezes for a moment.
+    deltaTime =
+        Math.min(
+            deltaTime,
+            0.033
+        );
+
+
+    // --------------------------------------------------------
+    // TIME
+    // --------------------------------------------------------
+
     elapsedTime +=
         deltaTime;
 
 
-    // Gradually increase speed.
+    // --------------------------------------------------------
+    // GRADUAL SPEED
+    // --------------------------------------------------------
+
     currentSpeed =
         Math.min(
             MAX_SPEED,
@@ -442,22 +858,23 @@ function gameLoop(currentTime) {
         );
 
 
-    // Score.
+    // --------------------------------------------------------
+    // SCORE
+    // --------------------------------------------------------
+
     score =
         Math.floor(
             elapsedTime *
-            currentSpeed /
             10
         );
 
 
-    if (scoreElement) {
+    updateScoreDisplay();
 
-        scoreElement.textContent =
-            score;
 
-    }
-
+    // --------------------------------------------------------
+    // UPDATE
+    // --------------------------------------------------------
 
     updatePlayer(
         deltaTime
@@ -469,7 +886,7 @@ function gameLoop(currentTime) {
     );
 
 
-    updateSprite(
+    updateCharacterAnimation(
         deltaTime
     );
 
@@ -477,8 +894,16 @@ function gameLoop(currentTime) {
     checkCollisions();
 
 
+    // --------------------------------------------------------
+    // DRAW
+    // --------------------------------------------------------
+
     drawGame();
 
+
+    // --------------------------------------------------------
+    // NEXT FRAME
+    // --------------------------------------------------------
 
     if (gameRunning) {
 
@@ -486,27 +911,50 @@ function gameLoop(currentTime) {
             requestAnimationFrame(
                 gameLoop
             );
-
     }
-
 }
 
 
 // ============================================================
-// PLAYER PHYSICS
+// 25. CURRENT SPEED
+// ============================================================
+
+let currentSpeed =
+    BASE_SPEED;
+
+
+// ============================================================
+// 26. SCORE DISPLAY
+// ============================================================
+
+function updateScoreDisplay() {
+
+    if (scoreElement) {
+
+        scoreElement.textContent =
+            String(score);
+    }
+}
+
+
+// ============================================================
+// 27. PLAYER PHYSICS
 // ============================================================
 
 function updatePlayer(deltaTime) {
 
     groundY =
-        window.innerHeight - 105;
+        window.innerHeight -
+        roadHeight;
 
 
+    // Gravity
     player.velocityY +=
         player.gravity *
         deltaTime;
 
 
+    // Movement
     player.y +=
         player.velocityY *
         deltaTime;
@@ -517,13 +965,19 @@ function updatePlayer(deltaTime) {
         player.height;
 
 
-    if (player.y >= floorY) {
+    // Floor collision
+    if (
+        player.y >=
+        floorY
+    ) {
 
         player.y =
             floorY;
 
+
         player.velocityY =
             0;
+
 
         player.grounded =
             true;
@@ -532,14 +986,12 @@ function updatePlayer(deltaTime) {
 
         player.grounded =
             false;
-
     }
-
 }
 
 
 // ============================================================
-// JUMP
+// 28. JUMP
 // ============================================================
 
 function jump() {
@@ -562,12 +1014,11 @@ function jump() {
 
     player.grounded =
         false;
-
 }
 
 
 // ============================================================
-// KEYBOARD CONTROLS
+// 29. KEYBOARD CONTROLS
 // ============================================================
 
 window.addEventListener(
@@ -579,52 +1030,71 @@ window.addEventListener(
             event.code === "ArrowUp"
         ) {
 
-            event.preventDefault();
+            if (gameRunning) {
 
-            jump();
+                event.preventDefault();
 
+                jump();
+            }
         }
-
     }
 );
 
 
 // ============================================================
-// TOUCH / MOUSE CONTROLS
+// 30. MOUSE / TOUCH CONTROLS
 // ============================================================
 
-if (canvas) {
+canvas.addEventListener(
+    "pointerdown",
+    function (event) {
 
-    canvas.addEventListener(
-        "pointerdown",
-        function (event) {
+        if (!gameRunning) {
 
-            if (!gameRunning) {
-
-                return;
-            }
-
-
-            event.preventDefault();
-
-            jump();
-
-        },
-        {
-            passive: false
+            return;
         }
-    );
 
-}
+
+        event.preventDefault();
+
+
+        jump();
+    },
+    {
+        passive: false
+    }
+);
 
 
 // ============================================================
-// SPRITE ANIMATION
+// 31. CHARACTER ANIMATION
+// ============================================================
+//
+// VERY IMPORTANT:
+//
+// The image is divided into 8 equal-width cells.
+//
+// We NEVER use a hard-coded Y value.
+//
+// We NEVER use a hard-coded source height.
+//
+// We use:
+//
+// sourceX = frame * frameWidth
+// sourceY = 0
+// sourceWidth = frameWidth
+// sourceHeight = entire image height
+//
+// Therefore every frame gets the complete character cell.
 // ============================================================
 
-function updateSprite(deltaTime) {
+function updateCharacterAnimation(
+    deltaTime
+) {
 
-    if (!spriteLoaded) {
+    if (
+        !characterSpriteLoaded
+    ) {
 
         return;
     }
@@ -634,12 +1104,13 @@ function updateSprite(deltaTime) {
         deltaTime;
 
 
-    if (
+    while (
         player.frameTimer >=
-        player.frameSpeed
+        player.frameDuration
     ) {
 
-        player.frameTimer = 0;
+        player.frameTimer -=
+            player.frameDuration;
 
 
         player.frame =
@@ -647,52 +1118,59 @@ function updateSprite(deltaTime) {
                 player.frame + 1
             ) %
             FRAME_COUNT;
-
     }
-
 }
 
 
 // ============================================================
-// CREATE OBSTACLE
+// 32. CREATE OBSTACLE
 // ============================================================
 
 function createObstacle() {
 
     const width =
-        45 +
-        Math.random() * 20;
+        42 +
+        Math.random() *
+        24;
 
 
     const height =
-        50 +
-        Math.random() * 30;
+        48 +
+        Math.random() *
+        32;
 
 
-    obstacles.push({
+    const obstacle = {
 
         x:
-            window.innerWidth + 40,
+            window.innerWidth +
+            60,
 
         y:
-            groundY - height,
+            groundY -
+            height,
 
         width:
             width,
 
         height:
             height
+    };
 
-    });
 
+    obstacles.push(
+        obstacle
+    );
 }
 
 
 // ============================================================
-// UPDATE OBSTACLES
+// 33. UPDATE OBSTACLES
 // ============================================================
 
-function updateObstacles(deltaTime) {
+function updateObstacles(
+    deltaTime
+) {
 
     distanceToNextObstacle -=
         currentSpeed *
@@ -700,7 +1178,8 @@ function updateObstacles(deltaTime) {
 
 
     if (
-        distanceToNextObstacle <= 0
+        distanceToNextObstacle <=
+        0
     ) {
 
         createObstacle();
@@ -708,7 +1187,6 @@ function updateObstacles(deltaTime) {
 
         distanceToNextObstacle =
             randomObstacleDistance();
-
     }
 
 
@@ -718,7 +1196,6 @@ function updateObstacles(deltaTime) {
             obstacle.x -=
                 currentSpeed *
                 deltaTime;
-
         }
     );
 
@@ -732,39 +1209,70 @@ function updateObstacles(deltaTime) {
                     obstacle.width >
                     -100
                 );
-
             }
         );
-
 }
 
 
 // ============================================================
-// COLLISION DETECTION
+// 34. COLLISION BOX
+// ============================================================
+//
+// The visible sprite is slightly larger than the
+// actual character body.
+//
+// So we use a smaller collision box.
+// This makes the game feel fair.
+// ============================================================
+
+function getPlayerCollisionBox() {
+
+    return {
+
+        x:
+            player.x +
+            28,
+
+        y:
+            player.y +
+            25,
+
+        width:
+            player.width -
+            56,
+
+        height:
+            player.height -
+            32
+    };
+}
+
+
+// ============================================================
+// 35. COLLISION CHECK
 // ============================================================
 
 function checkCollisions() {
 
-    const playerBox = {
+    if (!gameRunning) {
 
-        x:
-            player.x + 29,
+        return;
+    }
 
-        y:
-            player.y + 28,
 
-        width:
-            player.width - 58,
-
-        height:
-            player.height - 34
-
-    };
+    const playerBox =
+        getPlayerCollisionBox();
 
 
     for (
-        const obstacle of obstacles
+        let i = 0;
+        i < obstacles.length;
+        i++
     ) {
+
+        const obstacle =
+            obstacles[i];
+
 
         const collision =
 
@@ -797,14 +1305,12 @@ function checkCollisions() {
 
             return;
         }
-
     }
-
 }
 
 
 // ============================================================
-// GAME OVER
+// 36. GAME OVER
 // ============================================================
 
 function gameOver() {
@@ -815,7 +1321,19 @@ function gameOver() {
     }
 
 
-    gameRunning = false;
+    console.log(
+        "GAME OVER"
+    );
+
+
+    console.log(
+        "Final score:",
+        score
+    );
+
+
+    gameRunning =
+        false;
 
 
     if (
@@ -826,88 +1344,48 @@ function gameOver() {
             gameAnimationId
         );
 
-        gameAnimationId = null;
 
+        gameAnimationId =
+            null;
     }
-
-
-    console.log(
-        "Game over. Score:",
-        score
-    );
 
 
     // Show current score.
     if (resultScore) {
 
         resultScore.textContent =
-            score;
-
+            String(score);
     }
 
 
-    // There is NO high score anymore.
-    if (resultHighScore) {
+    // Make sure the surprise image is visible.
+    if (surpriseImage) {
 
-        resultHighScore.textContent =
-            "";
-
+        surpriseImage.style.display =
+            "block";
     }
 
 
+    // Remove any previous record class.
     if (resultPanel) {
 
         resultPanel.classList.remove(
             "new-record"
         );
-
     }
 
 
-    // Show surprise screen.
     showScreen(
         surpriseScreen
     );
-
 }
 
 
 // ============================================================
-// DRAW GAME
+// 37. DRAW GAME
 // ============================================================
 
 function drawGame() {
-
-    if (!ctx) {
-
-        return;
-    }
-
-
-    ctx.clearRect(
-        0,
-        0,
-        window.innerWidth,
-        window.innerHeight
-    );
-
-
-    drawBackground();
-
-    drawGround();
-
-    drawObstacles();
-
-    drawPlayer();
-
-}
-
-
-// ============================================================
-// BACKGROUND
-// ============================================================
-
-function drawBackground() {
 
     const width =
         window.innerWidth;
@@ -915,6 +1393,46 @@ function drawBackground() {
     const height =
         window.innerHeight;
 
+
+    ctx.clearRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    drawBackground(
+        width,
+        height
+    );
+
+
+    drawGround(
+        width,
+        height
+    );
+
+
+    drawObstacles();
+
+
+    drawPlayer();
+}
+
+
+// ============================================================
+// 38. BACKGROUND
+// ============================================================
+
+function drawBackground(
+    width,
+    height
+) {
+
+    // --------------------------------------------------------
+    // SKY GRADIENT
+    // --------------------------------------------------------
 
     const gradient =
         ctx.createLinearGradient(
@@ -932,7 +1450,7 @@ function drawBackground() {
 
 
     gradient.addColorStop(
-        0.55,
+        0.45,
         "#0b1020"
     );
 
@@ -955,22 +1473,29 @@ function drawBackground() {
     );
 
 
+    // --------------------------------------------------------
+    // STARS
+    // --------------------------------------------------------
+
     drawStars(
         width,
         height
     );
 
 
+    // --------------------------------------------------------
+    // MOUNTAINS
+    // --------------------------------------------------------
+
     drawMountains(
         width,
         height
     );
-
 }
 
 
 // ============================================================
-// STARS
+// 39. STARS
 // ============================================================
 
 function drawStars(
@@ -981,17 +1506,34 @@ function drawStars(
     const stars = [
 
         [0.08, 0.15, 2],
-        [0.18, 0.08, 1],
-        [0.29, 0.20, 2],
-        [0.42, 0.10, 1],
-        [0.55, 0.18, 2],
-        [0.67, 0.07, 1],
-        [0.88, 0.10, 2],
-        [0.93, 0.28, 1],
-        [0.12, 0.34, 1],
-        [0.36, 0.30, 1],
-        [0.62, 0.31, 1]
 
+        [0.18, 0.08, 1],
+
+        [0.29, 0.20, 2],
+
+        [0.42, 0.10, 1],
+
+        [0.55, 0.18, 2],
+
+        [0.67, 0.07, 1],
+
+        [0.88, 0.10, 2],
+
+        [0.93, 0.28, 1],
+
+        [0.12, 0.34, 1],
+
+        [0.36, 0.30, 1],
+
+        [0.62, 0.31, 1],
+
+        [0.77, 0.19, 1],
+
+        [0.48, 0.35, 1],
+
+        [0.03, 0.25, 1],
+
+        [0.98, 0.18, 1]
     ];
 
 
@@ -1007,35 +1549,38 @@ function drawStars(
 
             ctx.arc(
 
-                width * star[0],
+                width *
+                star[0],
 
-                height * star[1],
+                height *
+                star[1],
 
                 star[2],
 
                 0,
 
                 Math.PI * 2
-
             );
 
 
             ctx.fill();
-
         }
     );
-
 }
 
 
 // ============================================================
-// MOUNTAINS
+// 40. MOUNTAINS
 // ============================================================
 
 function drawMountains(
     width,
     height
 ) {
+
+    // --------------------------------------------------------
+    // BACK MOUNTAINS
+    // --------------------------------------------------------
 
     ctx.fillStyle =
         "#151936";
@@ -1104,6 +1649,10 @@ function drawMountains(
     ctx.fill();
 
 
+    // --------------------------------------------------------
+    // FRONT MOUNTAINS
+    // --------------------------------------------------------
+
     ctx.fillStyle =
         "#0b1120";
 
@@ -1169,24 +1718,26 @@ function drawMountains(
 
 
     ctx.fill();
-
 }
 
 
 // ============================================================
-// GROUND
+// 41. GROUND
 // ============================================================
 
-function drawGround() {
-
-    const roadHeight =
-        105;
-
+function drawGround(
+    width,
+    height
+) {
 
     const roadY =
-        window.innerHeight -
+        height -
         roadHeight;
 
+
+    // --------------------------------------------------------
+    // ROAD
+    // --------------------------------------------------------
 
     ctx.fillStyle =
         "#111116";
@@ -1195,10 +1746,14 @@ function drawGround() {
     ctx.fillRect(
         0,
         roadY,
-        window.innerWidth,
+        width,
         roadHeight
     );
 
+
+    // --------------------------------------------------------
+    // TOP EDGE
+    // --------------------------------------------------------
 
     ctx.fillStyle =
         "#38383f";
@@ -1207,16 +1762,26 @@ function drawGround() {
     ctx.fillRect(
         0,
         groundY,
-        window.innerWidth,
+        width,
         3
     );
 
 
+    // --------------------------------------------------------
+    // ROAD MARKINGS
+    // --------------------------------------------------------
+
     const markWidth =
         55;
 
+
     const gap =
         90;
+
+
+    const cycle =
+        markWidth +
+        gap;
 
 
     const offset =
@@ -1224,10 +1789,7 @@ function drawGround() {
             elapsedTime *
             currentSpeed
         ) %
-        (
-            markWidth +
-            gap
-        );
+        cycle;
 
 
     ctx.fillStyle =
@@ -1236,8 +1798,8 @@ function drawGround() {
 
     for (
         let x = -offset;
-        x < window.innerWidth;
-        x += markWidth + gap
+        x < width;
+        x += cycle
     ) {
 
         ctx.fillRect(
@@ -1246,14 +1808,12 @@ function drawGround() {
             markWidth,
             3
         );
-
     }
-
 }
 
 
 // ============================================================
-// DRAW OBSTACLES
+// 42. DRAW OBSTACLES
 // ============================================================
 
 function drawObstacles() {
@@ -1261,7 +1821,10 @@ function drawObstacles() {
     obstacles.forEach(
         function (obstacle) {
 
-            // Shadow
+            // ------------------------------------------------
+            // SHADOW
+            // ------------------------------------------------
+
             ctx.fillStyle =
                 "rgba(0,0,0,0.45)";
 
@@ -1276,21 +1839,24 @@ function drawObstacles() {
                 obstacle.width,
 
                 7
-
             );
 
 
-            // Obstacle gradient
+            // ------------------------------------------------
+            // OBSTACLE BODY
+            // ------------------------------------------------
+
             const gradient =
                 ctx.createLinearGradient(
 
                     obstacle.x,
+
                     obstacle.y,
 
                     obstacle.x,
+
                     obstacle.y +
                     obstacle.height
-
                 );
 
 
@@ -1319,15 +1885,19 @@ function drawObstacles() {
             ctx.fillRect(
 
                 obstacle.x,
+
                 obstacle.y,
 
                 obstacle.width,
-                obstacle.height
 
+                obstacle.height
             );
 
 
-            // Border
+            // ------------------------------------------------
+            // OUTLINE
+            // ------------------------------------------------
+
             ctx.strokeStyle =
                 "rgba(195,165,235,0.65)";
 
@@ -1339,26 +1909,61 @@ function drawObstacles() {
             ctx.strokeRect(
 
                 obstacle.x,
+
                 obstacle.y,
 
                 obstacle.width,
+
                 obstacle.height
-
             );
-
         }
     );
-
 }
 
 
 // ============================================================
-// DRAW PLAYER
+// 43. DRAW PLAYER
+// ============================================================
+//
+// THIS IS THE MOST IMPORTANT SPRITE FUNCTION.
+//
+// We calculate the source frame from the actual image size.
+//
+// If the image is 1600 x 200:
+//
+// frameWidth = 1600 / 8 = 200
+// frameHeight = 200
+//
+// Frame 0:
+//
+// sourceX = 0
+// sourceY = 0
+// sourceWidth = 200
+// sourceHeight = 200
+//
+// Frame 1:
+//
+// sourceX = 200
+//
+// etc.
+//
+// NO OLD Y-CROP.
+// NO 280.
+// NO 350.
+// NO HALF-BODY CROP.
 // ============================================================
 
 function drawPlayer() {
 
-    if (!spriteLoaded) {
+    // --------------------------------------------------------
+    // SPRITE NOT LOADED
+    // --------------------------------------------------------
+
+    if (
+        !characterSpriteLoaded ||
+        characterSprite.naturalWidth <= 0 ||
+        characterSprite.naturalHeight <= 0
+    ) {
 
         drawFallbackPlayer();
 
@@ -1366,27 +1971,77 @@ function drawPlayer() {
     }
 
 
+    // --------------------------------------------------------
+    // IMAGE DIMENSIONS
+    // --------------------------------------------------------
+
+    const imageWidth =
+        characterSprite.naturalWidth;
+
+
+    const imageHeight =
+        characterSprite.naturalHeight;
+
+
+    // --------------------------------------------------------
+    // EACH FRAME GETS EXACTLY 1/8 OF THE IMAGE WIDTH
+    // --------------------------------------------------------
+
     const frameWidth =
-        playerSprite.naturalWidth /
+        imageWidth /
         FRAME_COUNT;
 
 
+    // --------------------------------------------------------
+    // CURRENT FRAME
+    // --------------------------------------------------------
+
+    const frame =
+        Math.max(
+            0,
+            Math.min(
+                FRAME_COUNT - 1,
+                Math.floor(player.frame)
+            )
+        );
+
+
+    // --------------------------------------------------------
+    // SOURCE RECTANGLE
+    // --------------------------------------------------------
+
     const sourceX =
-        player.frame *
+        frame *
         frameWidth;
 
 
+    const sourceY =
+        0;
+
+
+    const sourceWidth =
+        frameWidth;
+
+
+    const sourceHeight =
+        imageHeight;
+
+
+    // --------------------------------------------------------
+    // DRAW COMPLETE FRAME
+    // --------------------------------------------------------
+
     ctx.drawImage(
 
-        playerSprite,
+        characterSprite,
 
         sourceX,
 
-        SPRITE_SOURCE_Y,
+        sourceY,
 
-        frameWidth,
+        sourceWidth,
 
-        SPRITE_SOURCE_HEIGHT,
+        sourceHeight,
 
         player.x,
 
@@ -1395,14 +2050,16 @@ function drawPlayer() {
         player.width,
 
         player.height
-
     );
-
 }
 
 
 // ============================================================
-// FALLBACK PLAYER
+// 44. FALLBACK CHARACTER
+// ============================================================
+//
+// This is ONLY used if character-run.png hasn't loaded.
+// It prevents a completely blank player area.
 // ============================================================
 
 function drawFallbackPlayer() {
@@ -1410,9 +2067,14 @@ function drawFallbackPlayer() {
     const x =
         player.x;
 
+
     const y =
         player.y;
 
+
+    // --------------------------------------------------------
+    // BODY
+    // --------------------------------------------------------
 
     ctx.fillStyle =
         "#493477";
@@ -1420,11 +2082,15 @@ function drawFallbackPlayer() {
 
     ctx.fillRect(
         x + 27,
-        y + 58,
+        y + 55,
         50,
-        65
+        68
     );
 
+
+    // --------------------------------------------------------
+    // HEAD
+    // --------------------------------------------------------
 
     ctx.fillStyle =
         "#d7ad8b";
@@ -1435,8 +2101,8 @@ function drawFallbackPlayer() {
 
     ctx.arc(
         x + 52,
-        y + 42,
-        24,
+        y + 39,
+        23,
         0,
         Math.PI * 2
     );
@@ -1444,6 +2110,10 @@ function drawFallbackPlayer() {
 
     ctx.fill();
 
+
+    // --------------------------------------------------------
+    // HAIR
+    // --------------------------------------------------------
 
     ctx.fillStyle =
         "#11101d";
@@ -1453,20 +2123,20 @@ function drawFallbackPlayer() {
 
 
     ctx.moveTo(
-        x + 29,
+        x + 28,
         y + 39
     );
 
 
     ctx.lineTo(
-        x + 38,
+        x + 37,
         y + 8
     );
 
 
     ctx.lineTo(
         x + 48,
-        y + 28
+        y + 27
     );
 
 
@@ -1477,8 +2147,8 @@ function drawFallbackPlayer() {
 
 
     ctx.lineTo(
-        x + 68,
-        y + 27
+        x + 69,
+        y + 28
     );
 
 
@@ -1500,6 +2170,10 @@ function drawFallbackPlayer() {
     ctx.fill();
 
 
+    // --------------------------------------------------------
+    // LEGS
+    // --------------------------------------------------------
+
     ctx.fillStyle =
         "#171426";
 
@@ -1518,82 +2192,163 @@ function drawFallbackPlayer() {
         17,
         30
     );
-
 }
 
 
 // ============================================================
-// RESIZE CANVAS
+// 45. PREVENT DOUBLE-START FROM MULTIPLE INPUTS
 // ============================================================
 
-function resizeCanvas() {
+let lastJumpTime =
+    0;
 
-    if (!canvas || !ctx) {
+
+function safeJump() {
+
+    const now =
+        performance.now();
+
+
+    if (
+        now -
+        lastJumpTime <
+        120
+    ) {
 
         return;
     }
 
 
-    const dpr =
-        Math.min(
-            window.devicePixelRatio || 1,
-            2
-        );
+    lastJumpTime =
+        now;
 
 
-    canvas.width =
-        window.innerWidth *
-        dpr;
-
-
-    canvas.height =
-        window.innerHeight *
-        dpr;
-
-
-    canvas.style.width =
-        window.innerWidth +
-        "px";
-
-
-    canvas.style.height =
-        window.innerHeight +
-        "px";
-
-
-    ctx.setTransform(
-        dpr,
-        0,
-        0,
-        dpr,
-        0,
-        0
-    );
-
-
-    ctx.imageSmoothingEnabled =
-        false;
-
+    jump();
 }
 
 
+// ============================================================
+// 46. IMPROVED KEYBOARD INPUT
+// ============================================================
+
 window.addEventListener(
-    "resize",
-    resizeCanvas
+    "keydown",
+    function (event) {
+
+        if (
+            event.code === "Space" ||
+            event.code === "ArrowUp"
+        ) {
+
+            if (!gameRunning) {
+
+                return;
+            }
+
+
+            event.preventDefault();
+
+
+            safeJump();
+        }
+    }
 );
 
 
 // ============================================================
-// INITIALIZATION
+// 47. MOUSE / TOUCH INPUT
+// ============================================================
+
+canvas.addEventListener(
+    "pointerdown",
+    function (event) {
+
+        if (!gameRunning) {
+
+            return;
+        }
+
+
+        event.preventDefault();
+
+
+        safeJump();
+    },
+    {
+        passive: false
+    }
+);
+
+
+// ============================================================
+// 48. DRAW INITIAL FRAME
+// ============================================================
+
+function drawInitialScene() {
+
+    resizeCanvas();
+
+
+    drawGame();
+}
+
+
+// ============================================================
+// 49. PRELOAD CHARACTER
+// ============================================================
+
+function waitForCharacterThenDraw() {
+
+    if (
+        characterSprite.complete &&
+        characterSprite.naturalWidth > 0
+    ) {
+
+        characterSpriteLoaded =
+            true;
+
+        console.log(
+            "Character image was already cached."
+        );
+
+        return;
+    }
+
+
+    console.log(
+        "Waiting for character sprite..."
+    );
+}
+
+
+// ============================================================
+// 50. INITIALIZATION
 // ============================================================
 
 resizeCanvas();
+
+waitForCharacterThenDraw();
 
 showScreen(
     introScreen
 );
 
+console.log(
+    "========================================"
+);
 
 console.log(
-    "Anime Runner loaded successfully."
+    "ANIME RUNNER READY"
+);
+
+console.log(
+    "Click ENTER GAME 1."
+);
+
+console.log(
+    "Then click CONTINUE."
+);
+
+console.log(
+    "========================================"
 );

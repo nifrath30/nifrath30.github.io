@@ -2,52 +2,53 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        content="width=device-width, initial-scale=1.0"
     >
 
     <title>Anime Runner</title>
 
+    <!-- Same fonts/style theme -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Orbitron:wght@400;500;600;700&display=swap"
+        rel="stylesheet"
+    >
+
     <link rel="stylesheet" href="game.css">
-
 </head>
-
 
 <body>
 
-<div id="game">
-
-
     <!-- =====================================================
-         INTRO
-    ====================================================== -->
+         INTRO SCREEN
+         ===================================================== -->
 
     <section
         id="introScreen"
         class="screen active"
     >
 
-        <div class="intro-glow"></div>
-
         <div class="intro-content">
 
-            <p class="small-text">
-                A NEW JOURNEY BEGINS
-            </p>
-
-            <h1>
-                UNKNOWN
+            <h1 class="game-title">
+                ANIME RUNNER
             </h1>
 
-            <p class="intro-description">
-                Every journey begins with a single step.
+            <p class="game-subtitle">
+                WATASHI NO ANIME SOCIETY
             </p>
 
-            <button id="startIntroButton">
+            <button
+                id="startIntroButton"
+                class="game-button"
+                type="button"
+            >
                 ENTER GAME 1
             </button>
 
@@ -56,33 +57,34 @@
     </section>
 
 
-
     <!-- =====================================================
-         LOBBY
-    ====================================================== -->
+         LOBBY SCREEN
+         ===================================================== -->
 
     <section
         id="lobbyScreen"
         class="screen"
     >
 
-        <div class="lobby-background"></div>
-
         <div class="lobby-content">
 
-            <p class="small-text">
-                ANIME RUNNER
+            <p class="lobby-label">
+                WATASHI NO ANIME SOCIETY
             </p>
 
-            <h1>
-                READY?
+            <h1 class="lobby-title">
+                ANIME RUNNER
             </h1>
 
-            <p class="intro-description">
-                Your journey is about to begin.
+            <p class="lobby-description">
+                RUN. JUMP. SURVIVE.
             </p>
 
-            <button id="continueButton">
+            <button
+                id="playButton"
+                class="game-button"
+                type="button"
+            >
                 CONTINUE
             </button>
 
@@ -91,10 +93,9 @@
     </section>
 
 
-
     <!-- =====================================================
-         GAME
-    ====================================================== -->
+         GAME SCREEN
+         ===================================================== -->
 
     <section
         id="gameScreen"
@@ -103,25 +104,10 @@
 
         <canvas id="gameCanvas"></canvas>
 
+        <div class="game-ui">
 
-        <div id="gameUI">
-
-            <div class="game-top">
-
-                <div class="player-display">
-                    ANIME RUNNER
-                </div>
-
-                <div class="score-display">
-
-                    SCORE
-
-                    <span id="score">
-                        0
-                    </span>
-
-                </div>
-
+            <div id="score">
+                0
             </div>
 
         </div>
@@ -129,74 +115,57 @@
     </section>
 
 
-
     <!-- =====================================================
-         GAME OVER
-    ====================================================== -->
+         GAME OVER SCREEN
+         ===================================================== -->
 
     <section
         id="surpriseScreen"
         class="screen"
     >
 
-        <img
-            id="surpriseImage"
-            src="assets/surprise.png"
-            alt="Surprise"
-        >
-
-
         <div id="resultPanel">
 
-            <p class="small-text">
-                JOURNEY COMPLETE
+            <img
+                src="assets/surprise.png"
+                alt="Surprise"
+                id="surpriseImage"
+            >
+
+            <p class="game-over-label">
+                GAME OVER
             </p>
 
-
-            <h1 id="resultTitle">
-                YOUR SCORE
+            <h1 class="game-over-title">
+                YOU GOT CAUGHT
             </h1>
 
+            <p class="current-score-label">
+                SCORE
+            </p>
 
             <div id="resultScore">
                 0
             </div>
 
-
-            <p id="resultHighScore">
-                SCORE: 0
-            </p>
-
-
-            <p
-                id="newRecordText"
-                class="new-record-text"
+            <button
+                id="retryButton"
+                class="game-button"
+                type="button"
             >
-                TRY AGAIN
-            </p>
-
-
-            <button id="retryButton">
                 RETRY
             </button>
-
-
-            <a
-                href="../index.html"
-                id="homeButton"
-            >
-                GO BACK TO HOME
-            </a>
 
         </div>
 
     </section>
 
 
-</div>
+    <!-- =====================================================
+         GAME JAVASCRIPT
+         ===================================================== -->
 
-
-<script src="game.js"></script>
+    <script src="game.js"></script>
 
 </body>
 
