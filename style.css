@@ -1486,3 +1486,112 @@ body {
 
     overflow-x: hidden;
 }
+/* ================================
+   DOWNLOADS
+================================= */
+
+.downloads-section {
+    position: absolute;
+    top: 310px;
+    left: 6vw;
+    z-index: 20;
+    text-align: left;
+}
+
+.downloads-section h2 {
+    margin: 0 0 12px 0;
+    font-family: "Orbitron", sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+}
+
+.downloads-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.downloads-list a {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    color: white;
+    text-decoration: none;
+    font-family: "Orbitron", sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+}
+
+.downloads-list a:hover {
+    color: #c4a1ff;
+}
+
+.downloads-list span {
+    min-width: 100px;
+}
+
+.downloads-list strong {
+    font-size: 10px;
+    letter-spacing: 2px;
+}
+
+
+/* ================================
+   PHONE
+================================= */
+
+@media (max-width: 900px) {
+
+    .downloads-section {
+        top: 260px;
+        left: 5vw;
+    }
+
+    .downloads-section h2 {
+        font-size: 15px;
+        margin-bottom: 10px;
+    }
+
+    .downloads-list {
+        gap: 6px;
+    }
+
+    .downloads-list a {
+        font-size: 9px;
+        gap: 15px;
+    }
+
+    .downloads-list strong {
+        font-size: 8px;
+    }
+}
+
+
+/* ================================
+   SMALL PHONE
+================================= */
+
+@media (max-width: 480px) {
+
+    .downloads-section {
+        top: 240px;
+        left: 5vw;
+    }
+
+    .downloads-section h2 {
+        font-size: 13px;
+    }
+
+    .downloads-list {
+        gap: 5px;
+    }
+
+    .downloads-list a {
+        font-size: 8px;
+        gap: 12px;
+    }
+
+    .downloads-list strong {
+        font-size: 7px;
+    }
+}
